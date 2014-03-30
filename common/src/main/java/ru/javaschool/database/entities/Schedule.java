@@ -15,8 +15,6 @@ public class Schedule implements Serializable{
     private Date dateTrip;
     @Column(nullable = false)
     private int departureTime;
-    @Column(nullable = false)
-    private int emptySeats;
     @ManyToOne
     private Route route;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="schedule")
@@ -54,14 +52,6 @@ public class Schedule implements Serializable{
         this.departureTime = departureTime;
     }
 
-    public int getEmptySeats() {
-        return emptySeats;
-    }
-
-    public void setEmptySeats(int emptySeats) {
-        this.emptySeats = emptySeats;
-    }
-
     public Route getRoute() {
         return route;
     }
@@ -77,7 +67,6 @@ public class Schedule implements Serializable{
                 ", scheduleId=" + scheduleId +
                 ", dateTrip=" + dateTrip +
                 ", departureTime=" + departureTime +
-                ", emptySeats=" + emptySeats +
                 '}';
     }
 }

@@ -50,6 +50,10 @@ public class Route implements Serializable{
         this.stationDistances = stationDistances;
     }
 
+//    public String getDepartureStationName(){
+//        stationDistances.
+//    }
+
     //public void getDeparture
 
     @Override

@@ -4,6 +4,7 @@ package ru.javaschool.clientMain;
 import org.apache.log4j.Logger;
 import ru.javaschool.database.criteria.Request;
 import ru.javaschool.database.criteria.Response;
+import ru.javaschool.database.criteria.SampleObject;
 import ru.javaschool.database.criteria.ScheduleConstraints;
 import ru.javaschool.database.entities.*;
 
@@ -107,7 +108,7 @@ public class ClientSocket {
     }
 
     public List<Schedule> getRevisedSchedule(ScheduleConstraints condition) {
-        Response response = new ClientSocket().getResponse(new Request("Get revised schedule"));
+        Response response = new ClientSocket().getResponse(new Request("Get revised schedule",condition));
 
         List<Schedule> resultList = null;
         if (!response.getIsProblem()) {
@@ -116,7 +117,6 @@ public class ClientSocket {
             // some actions for handling problem
         }
         return resultList;
-
     }
 
     public boolean checkLoginAvailable(EmployeeData ed) {        // release
@@ -130,7 +130,28 @@ public class ClientSocket {
         List<Passenger> result = null;
         if (!response.getIsProblem()) {
             result = (List<Passenger>) response.getRespBody();
+        } else{
+            // er
         }
         return result;
+    }
+
+    public Response buyTicket(long scheduleId, Passenger passenger) {
+
+        Response result = ClientSocket.getInstance().getResponse
+                                     (new Request(("Buy ticket"), new SampleObject<Long, Passenger>(scheduleId,passenger)));
+        return result;
+    }
+
+    public Station getStationByName(String name){
+        Response response = ClientSocket.getInstance().getResponse(new Request("Get station by name", name));
+
+        Station resultStation = null;
+        if(!response.getIsProblem()){
+            resultStation = (Station) response.getRespBody();
+        } else{
+            // errors
+        }
+        return resultStation;
     }
 }

@@ -15,10 +15,10 @@ public class Response implements Serializable{
     private static final long serialVersionUID = 4454945973610760253L;
 
     private String title;
-    private Serializable respBody;
+    private Object respBody;
     private boolean isProblem;
 
-    public Response(Serializable obj){
+    public Response(Object obj){
         respBody = obj;
     }
 
@@ -36,7 +36,7 @@ public class Response implements Serializable{
         this.title = title;
     }
 
-    public Serializable getRespBody() {
+    public Object getRespBody() {
         return respBody;
     }
 

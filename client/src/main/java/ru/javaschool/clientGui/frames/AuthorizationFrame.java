@@ -82,7 +82,7 @@ public class AuthorizationFrame extends JFrame {
                     } else {
                         ClientFrame.registered = true;
                         ClientFrame.bookmark.addTab("Administration", new AdministratorPanel());
-                        SchedulePanel.getRegisteredPassengersButton.setEnabled(true);
+                        SchedulePanel.getRegisteredPassengersButton.setVisible(true);
                         JOptionPane.showMessageDialog(null, "Hello, " + ed.getLogin());
                         AuthorizationFrame.super.dispose();
                     }

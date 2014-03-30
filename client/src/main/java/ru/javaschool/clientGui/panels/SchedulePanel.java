@@ -2,11 +2,11 @@ package ru.javaschool.clientGui.panels;
 
 
 import ru.javaschool.clientGui.frames.AuthorizationFrame;
-import ru.javaschool.clientGui.frames.BuyTicketFrame;
 import ru.javaschool.clientGui.frames.ClientFrame;
 import ru.javaschool.clientGui.frames.RegisteredPassengersFrame;
 import ru.javaschool.clientGui.views.ScheduleView;
 import ru.javaschool.clientMain.ClientSocket;
+import ru.javaschool.database.criteria.ScheduleConstraints;
 import ru.javaschool.database.entities.Schedule;
 
 import javax.swing.*;
@@ -14,6 +14,8 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class SchedulePanel extends StandartPanel {
@@ -21,6 +23,9 @@ public class SchedulePanel extends StandartPanel {
     private JTable scheduleTable;
     private TableModel scheduleView;
     public static JButton getRegisteredPassengersButton;
+    private JTextField dateTripTextField;
+    private JTextField toTextField;
+    private JTextField fromTextField;
 
     public SchedulePanel() {
         super(new BorderLayout());
@@ -36,20 +41,20 @@ public class SchedulePanel extends StandartPanel {
         this.add(conditionPanel, BorderLayout.NORTH);
 
         JLabel from = new JLabel("FROM");
-        JTextField fromTextField = new JTextField(14);
+        fromTextField = new JTextField(14);
         from.setLabelFor(fromTextField);
         JLabel to = new JLabel("TO");
-        JTextField toTextField = new JTextField(14);
+        toTextField = new JTextField(14);
         to.setLabelFor(toTextField);
-        JLabel dateTrip = new JLabel("Date trip");
-        JTextField dateTripTextField = new JTextField(8);
-        dateTrip.setLabelFor(dateTripTextField);
+        JLabel dateTripLabel = new JLabel("Date trip");
+        dateTripTextField = new JTextField(8);
+        dateTripLabel.setLabelFor(dateTripTextField);
 
         conditionPanel.add(from);
         conditionPanel.add(fromTextField);
         conditionPanel.add(to);
         conditionPanel.add(toTextField);
-        conditionPanel.add(dateTrip);
+        conditionPanel.add(dateTripLabel);
         conditionPanel.add(dateTripTextField);
     }
 
@@ -74,12 +79,12 @@ public class SchedulePanel extends StandartPanel {
         JButton logOutButton = new JButton("Log out");
         getRegisteredPassengersButton = new JButton("Get registered passengers");
         if (!ClientFrame.registered) {
-            getRegisteredPassengersButton.setEnabled(false);
+            getRegisteredPassengersButton.setVisible(false);
         }
 
         getAllScheduleButton.addActionListener(new GetAllScheduleAction());
         getRevisedScheduleButton.addActionListener(new getRevisedScheduleAction());
-        buyTicketButton.addActionListener(new BuyTicketAction());
+        buyTicketButton.addActionListener(new BuyTicketAction(scheduleTable));
         getRegisteredPassengersButton.addActionListener(new PassengerListAction());
         authorizationButton.addActionListener(new AuthorizationAction());
         logOutButton.addActionListener(new LogOutAction());
@@ -117,12 +122,16 @@ public class SchedulePanel extends StandartPanel {
         }
     }
 
-    private class BuyTicketAction implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            new BuyTicketFrame();
-        }
-    }
+//    public class BuyTicketAction implements ActionListener {
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//            if (scheduleTable.getSelectedRow() == -1) {
+//                JOptionPane.showMessageDialog(null, "Choose concrete schedule!");
+//            } else {
+//                new BuyTicketFrame(scheduleTable);
+//            }
+//        }
+//    }
 
     private class PassengerListAction implements ActionListener {
         @Override
@@ -160,6 +169,31 @@ public class SchedulePanel extends StandartPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
 
+            ScheduleConstraints constraints = new ScheduleConstraints();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            try {
+                constraints.setDate(dateFormat.parse(dateTripTextField.getText()));
+            } catch (ParseException e1) {
+                e1.printStackTrace();
+            }
+            if (!fromTextField.getText().equals("")) {
+                constraints.setStationFromName(fromTextField.getText());
+            }
+            if (!toTextField.getText().equals("")) {
+                constraints.setStationToName(toTextField.getText());
+            } else {
+                constraints.setStationToName("not selected");
+            }
+
+            try {
+                scheduleTable.setModel(new ScheduleView(ClientSocket.getInstance().getRevisedSchedule(constraints)));
+
+                if (scheduleTable.getRowCount() == 0) {
+                    JOptionPane.showMessageDialog(null, "Sorry,there are no trains with that conditions!");
+                }
+            } catch (Exception exc) {
+                JOptionPane.showMessageDialog(null, "Sorry, server is not available!");
+            }
         }
     }
 
@@ -173,7 +207,7 @@ public class SchedulePanel extends StandartPanel {
                 if (answer == 0) {
                     ClientFrame.registered = false;
                     ClientFrame.bookmark.removeTabAt(2);
-                    SchedulePanel.getRegisteredPassengersButton.setEnabled(false);
+                    SchedulePanel.getRegisteredPassengersButton.setVisible(false);
                 }
             }
         }

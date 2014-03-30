@@ -59,7 +59,7 @@ public class ScheduleView extends AbstractTableModel {
             case DATE_TRIP: return schedule.getDateTrip();
             case TIME_DEPART: return schedule.getDepartureTime();
             case TRAIN_ID: return schedule.getRoute().getTrain().getTrainId();
+            default: return null;
         }
-        return null;
     }
 }

@@ -23,6 +23,10 @@
         <type>jar</type>
         <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>swissRailway</groupId>-->
             <!--<artifactId>server</artifactId>-->
