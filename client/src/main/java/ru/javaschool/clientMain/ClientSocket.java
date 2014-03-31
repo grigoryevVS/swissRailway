@@ -42,7 +42,7 @@ public class ClientSocket {
             ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(clientSock.getOutputStream()));
             out.writeObject(request);
             out.flush();
-            clientSock.shutdownOutput();
+            //clientSock.shutdownOutput();
 
             ObjectInputStream in = new ObjectInputStream(clientSock.getInputStream());
             resultResponse = (Response) in.readObject();

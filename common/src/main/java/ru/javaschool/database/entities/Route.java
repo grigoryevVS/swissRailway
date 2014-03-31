@@ -1,6 +1,7 @@
 package ru.javaschool.database.entities;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -13,8 +14,9 @@ public class Route implements Serializable{
     @GeneratedValue
     private long routeId;
     @Column
+    @NotNull(message = "It can't be empty!")
     private String title;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="key.route")
+    @OneToMany( fetch = FetchType.EAGER, mappedBy="key.route")
     private List<StationDistance> stationDistances;
 
     public long getRouteId() {

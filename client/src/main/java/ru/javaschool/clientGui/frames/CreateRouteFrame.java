@@ -41,8 +41,8 @@ public class CreateRouteFrame extends JFrame {
 
 
 
-        JPanel viewPanel = new JPanel();
         distanceView = new StationDistanceView(new ArrayList<StationDistance>());
+        JPanel viewPanel = new JPanel();
         JTable stationTable = new JTable(distanceView);
         JScrollPane scrollPane = new JScrollPane(stationTable);
         viewPanel.add(scrollPane);
