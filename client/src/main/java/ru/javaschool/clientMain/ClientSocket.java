@@ -42,12 +42,10 @@ public class ClientSocket {
             ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(clientSock.getOutputStream()));
             out.writeObject(request);
             out.flush();
-            //clientSock.shutdownOutput();
+            clientSock.shutdownOutput();
 
             ObjectInputStream in = new ObjectInputStream(clientSock.getInputStream());
             resultResponse = (Response) in.readObject();
-//            in.close();
-//            out.close();
 
         } catch (IOException e) {
             logger.error((e.getMessage()));
@@ -69,30 +67,25 @@ public class ClientSocket {
         if (!response.getIsProblem()) {
             resultList = (List<Train>) response.getRespBody();
         } else {
-            // some actions for handling problem
+            // TODO error
         }
         return resultList;
 
     }
 
-    public String createTrain(Train train) {  // release
+    public String createTrain(Train train) {
         Response response = ClientSocket.getInstance().getResponse(new Request("Create train", train));
-        if (response.getIsProblem()) {
-            return response.getTitle();
-        } else {
-            return "Success!";
-        }
+        String result = "Success!";
+        if (response.getIsProblem())
+            result = response.getTitle();
+        return result;
     }
 
-    public String createStation(Station station) {   // release
-
+    public String createStation(Station station) {
         Response response = ClientSocket.getInstance().getResponse(new Request("Create station", station));
         String result = "Success!";
-        if (!response.getIsProblem()) {
+        if (response.getIsProblem())
             result = response.getTitle();
-        } else {
-            // TODO error handle
-        }
         return result;
     }
 
@@ -107,7 +100,7 @@ public class ClientSocket {
 
     public String createRoute(Route route) {
         Response response = ClientSocket.getInstance().getResponse(new Request("Create route", route));
-        String result = "Schedule successfully added!";
+        String result = "Success!";
         if (response.getIsProblem()) {
             result = response.getTitle();
         }
@@ -122,8 +115,7 @@ public class ClientSocket {
         if (!response.getIsProblem()) {
             resultList = (List<Schedule>) response.getRespBody();
         } else {
-            response.setTitle("The schedule is empty!");
-            // some actions for handling problem
+            // TODO error
         }
         return resultList;
     }
@@ -136,7 +128,7 @@ public class ClientSocket {
         if (!response.getIsProblem()) {
             resultList = (List<Schedule>) response.getRespBody();
         } else {
-            // some actions for handling problem
+            // TODO error
 
         }
         return resultList;
@@ -155,7 +147,7 @@ public class ClientSocket {
         if (!response.getIsProblem()) {
             result = (List<Passenger>) response.getRespBody();
         } else {
-            // er
+            // TODO error
         }
         return result;
     }
@@ -173,7 +165,7 @@ public class ClientSocket {
         if (!response.getIsProblem()) {
             resultStation = (Station) response.getRespBody();
         } else {
-            response.setTitle("There is no such station!");
+            // TODO error
         }
         return resultStation;
     }
@@ -186,7 +178,7 @@ public class ClientSocket {
         if (!response.getIsProblem()) {
             resultList = (List<Station>) response.getRespBody();
         } else {
-            // some actions for handling problem
+            // TODO error
         }
         return resultList;
     }
@@ -199,7 +191,7 @@ public class ClientSocket {
         if (!response.getIsProblem()) {
             resultList = (List<Route>) response.getRespBody();
         } else {
-            // some actions for handling problem
+            // TODO error
         }
         return resultList;
     }

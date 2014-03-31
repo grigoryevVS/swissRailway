@@ -53,19 +53,17 @@ public class CreateStationFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                Station station = new Station();
-                try {
+                if (setNameTextField.getText().isEmpty() || setStationIdTextField.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Input data!");
+                } else {
+                    Station station = new Station();
                     station.setStationId(Long.parseLong(setStationIdTextField.getText()));
                     station.setName(setNameTextField.getText());
 
                     String response = ClientSocket.getInstance().createStation(station);
                     JOptionPane.showMessageDialog(null, response);
-                    setClearFields();
-
-                } catch (RuntimeException ex) {
-                    JOptionPane.showMessageDialog(null, "Wrong data!");
-                    setClearFields();
                 }
+                setClearFields();
             }
 
             private void setClearFields() {

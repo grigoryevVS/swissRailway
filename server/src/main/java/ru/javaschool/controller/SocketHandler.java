@@ -9,10 +9,7 @@ import ru.javaschool.database.criteria.ScheduleConstraints;
 import ru.javaschool.database.entities.*;
 import ru.javaschool.services.EmployeeService;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 
 
@@ -66,9 +63,9 @@ public class SocketHandler implements Runnable {
         Response response;
 
         if (request.getTitle().equals("Get all trains")) {
-            response = new Response((emplService.getTrainList()));
+            response = new Response((Serializable) emplService.getTrainList());
         } else if (request.getTitle().equals("Get all stations")) {
-            response = new Response((emplService.getStationList()));
+            response = new Response((Serializable) emplService.getStationList());
         } else if (request.getTitle().equals("Create train")) {
             response = new Response(emplService.createTrain((Train) request.getReqBody()));
         } else if (request.getTitle().equals("Create station")) {
@@ -76,13 +73,13 @@ public class SocketHandler implements Runnable {
         } else if (request.getTitle().equals("Check authorization")) {
             response = new Response(emplService.checkExist((EmployeeData) request.getReqBody()));
         } else if (request.getTitle().equals("Get registered passengers")) {
-            response = new Response(emplService.getAllRegisteredPassOnTrain((Schedule) request.getReqBody()));
+            response = new Response((Serializable) emplService.getAllRegisteredPassOnTrain((Schedule) request.getReqBody()));
         } else if (request.getTitle().equals("Get all schedule")) {
-            response = new Response((emplService.getScheduleList()));
+            response = new Response((Serializable) emplService.getScheduleList());
         } else if (request.getTitle().equals("Buy ticket")) {
             response = new Response(emplService.buyTicket((SampleObject<Long, Passenger>) request.getReqBody()));
         } else if (request.getTitle().equals("Get revised schedule")) {
-            response = new Response(emplService.getRevisedScheduleList((ScheduleConstraints) request.getReqBody()));
+            response = new Response((Serializable) emplService.getRevisedScheduleList((ScheduleConstraints) request.getReqBody()));
         } else if (request.getTitle().equals("Get station by name")) {
             response = new Response(emplService.getStationByName((String) request.getReqBody()));
         } else if (request.getTitle().equals("Create route")) {
@@ -90,6 +87,8 @@ public class SocketHandler implements Runnable {
             return new Response(null);
         } else if (request.getTitle().equals("Create schedule")) {
             response = new Response(emplService.createSchedule((Schedule) request.getReqBody()));
+        } else if(request.getTitle().equals("Get all routes")) {
+            response = new Response((Serializable) emplService.getRouteList());
         } else {
             response = new Response(request.getTitle(), request.getTitle() + " - it is wrong request, try fix this.", true);
         }

@@ -15,10 +15,10 @@ public class Response implements Serializable{
     private static final long serialVersionUID = 4454945973610760253L;
 
     private String title;
-    private Object respBody;
+    private Serializable respBody;
     private boolean isProblem;
 
-    public Response(Object obj){
+    public Response(Serializable obj){
         respBody = obj;
     }
 

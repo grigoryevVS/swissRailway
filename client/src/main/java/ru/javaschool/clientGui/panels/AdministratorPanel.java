@@ -22,6 +22,7 @@ import java.util.ArrayList;
 public class AdministratorPanel extends StandartPanel {
 
     private JTable trainTable;
+    //private JTable stationTable = new StationView().se;
     private JPanel viewPanel;
 
     public AdministratorPanel() {
@@ -54,10 +55,12 @@ public class AdministratorPanel extends StandartPanel {
         JButton createNewStationButton = new JButton("CreateStation");
         JButton createNewTrainButton = new JButton("CreateTrain");
         JButton getAllTrainsButton = new JButton("Get all trains");
+  //      JButton getAllStationsButton = new JButton("Get all stations");
         JButton createNewRouteButton = new JButton("CreateRoute");
         JButton createNewScheduleButton = new JButton("CreateSchedule");
 
         getAllTrainsButton.addActionListener(new GetAllTrainsAction());
+//        getAllStationsButton.addActionListener(new GetAllStations());
         createNewTrainButton.addActionListener(new CreateTrainAction());
         createNewStationButton.addActionListener(new CreateStationAction());
         createNewRouteButton.addActionListener(new CreateRouteAction());
@@ -140,20 +143,11 @@ public class AdministratorPanel extends StandartPanel {
         public void actionPerformed(ActionEvent e) {
             JPanel panel = new JPanel();
             java.util.List<Route> routeList = ClientSocket.getInstance().getAllRoutes();
-            JComboBox<?> comboBoxTrain;
-            JComboBox<?> comboBoxRoute;
-            if (routeList == null) {
-                comboBoxRoute = new JComboBox<Object>();
-                comboBoxTrain = new JComboBox<Object>();
-                panel.add(comboBoxRoute);
-                panel.add(comboBoxTrain);
-            } else {
-                comboBoxRoute = new JComboBox<Object>(routeList.toArray());
-                java.util.List<Train> trainList = ClientSocket.getInstance().getAllTrains();
-                comboBoxTrain = new JComboBox<Object>(trainList.toArray());
-                panel.add(comboBoxRoute);
-                panel.add(comboBoxTrain);
-            }
+            java.util.List<Train> trainList = ClientSocket.getInstance().getAllTrains();
+            JComboBox<?> comboBoxTrain = new JComboBox<Object>(trainList.toArray());
+            JComboBox<?> comboBoxRoute = new JComboBox<Object>(routeList.toArray());
+            panel.add(comboBoxRoute);
+            panel.add(comboBoxTrain);
 
             panel.add(new JLabel("Date departure:"));
             JTextField dateRelease = new JTextField(10);
@@ -170,12 +164,32 @@ public class AdministratorPanel extends StandartPanel {
                     JOptionPane.showMessageDialog(null, "Wrong date format");
                     return;
                 }
-                schedule.setRoute((Route) comboBoxRoute.getSelectedItem());
-                schedule.setTrain((Train) comboBoxTrain.getSelectedItem());
-                final String message = ClientSocket.getInstance().createSchedule(schedule);
+                Route r = (Route) comboBoxRoute.getSelectedItem();
+                Train t = (Train) comboBoxTrain.getSelectedItem();
+                schedule.setRoute(r);
+                schedule.setTrain(t);
+                String message = ClientSocket.getInstance().createSchedule(schedule);
                 JOptionPane.showMessageDialog(null, message);
             }
         }
     }
+
+//    private class GetAllStations implements ActionListener {
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//            try {
+//                trainTable.setVisible(false);
+//                trainTable.setModel(new TrainView(ClientSocket.getInstance().getAllStations()));
+//
+//                viewPanel.setVisible(true);
+//
+//                if (trainTable.getRowCount() == 0) {
+//                    JOptionPane.showMessageDialog(null, "Sorry,there are no trains");
+//                }
+//            } catch (Exception exc) {
+//                JOptionPane.showMessageDialog(null, "Sorry, server is not available!");
+//            }
+//        }
+//    }
 }
 

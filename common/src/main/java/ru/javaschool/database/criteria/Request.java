@@ -12,13 +12,13 @@ public class Request implements Serializable{
     private static final long serialVersionUID = -4304486052013797450L;
 
     private String title;
-    private Object reqBody;
+    private Serializable reqBody;
 
     public String getTitle() {
         return title;
     }
 
-    public Object getReqBody() {
+    public Serializable getReqBody() {
         return reqBody;
     }
 
@@ -27,7 +27,7 @@ public class Request implements Serializable{
         reqBody = null;
     }
 
-    public Request(String title, Object obj){
+    public Request(String title, Serializable obj){
         this.title = title;
         this.reqBody = obj;
     }

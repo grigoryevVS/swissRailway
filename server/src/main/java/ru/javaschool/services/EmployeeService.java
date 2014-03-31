@@ -243,25 +243,33 @@ public class EmployeeService {
     }
 
 
-    public void createRoute(Route route) {
+    public String createRoute(Route route) {
         EntityManager em = EmfInit.em;
         EntityTransaction transact = em.getTransaction();
         try {
             transact.begin();
             try {
-                routeDao.insert(route);
+                routeDao.create(route);
+                if (route.getStationDistances() != null) {
+                    for (StationDistance sd : route.getStationDistances()) {
+                        new StationDistanceDao().create(sd);
+                    }
+                }
             } catch (SQLException e) {
                 logger.error(e.getMessage());
                 e.printStackTrace();
+                return "Failed, cause: " + e.getMessage();
             }
 
             transact.commit();
+            return "Success!";
 
         } catch (RollbackException e) {
             logger.error(e.getMessage());
             if (transact.isActive()) {
                 transact.rollback();
             }
+            return "Failed,cause: " + e.getMessage();
         }
     }
 
@@ -288,6 +296,17 @@ public class EmployeeService {
                 transact.rollback();
             }
             return e.getMessage();
+        }
+    }
+
+    public List<Route> getRouteList() {
+        logger.debug("get Routes method");
+        try {
+            return routeDao.findAll();
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+            return null;
         }
     }
 }

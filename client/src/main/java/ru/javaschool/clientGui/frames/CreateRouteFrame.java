@@ -19,11 +19,12 @@ import java.util.ArrayList;
 public class CreateRouteFrame extends JFrame {
 
 
-    private JComboBox<?> stationBox;
-    private JTextField stationTitleTextField;
+    private JComboBox stationBox;
+    private JTextField routeTitleTextField;
     private JTextField appearanceTimeTextField;
     private Route route = new Route();
     private StationDistanceView distanceView;
+    private JTextField sequenceNumberTextField;
 
     public CreateRouteFrame() {
         super("Creating a new route");
@@ -33,16 +34,12 @@ public class CreateRouteFrame extends JFrame {
         int x = screenSize.width;
         int y = screenSize.height;
 
-        setSize(x / 3 * 2, y / 3 * 2);
+        setSize(x / 5 * 3, y / 5 * 4);
         setVisible(true);
-        setLocation(x / 5, y / 5);
+        setLocation(x / 5, 100);
 
-        JPanel routePanel = new JPanel();
-
-
-
-        distanceView = new StationDistanceView(new ArrayList<StationDistance>());
         JPanel viewPanel = new JPanel();
+        distanceView = new StationDistanceView(new ArrayList<StationDistance>());
         JTable stationTable = new JTable(distanceView);
         JScrollPane scrollPane = new JScrollPane(stationTable);
         viewPanel.add(scrollPane);
@@ -52,7 +49,7 @@ public class CreateRouteFrame extends JFrame {
         java.util.List<Station> stationList = ClientSocket.getInstance().getAllStations();
         stationBox = new JComboBox<Object>(stationList.toArray());
         JLabel sequenceNumberLabel = new JLabel("Sequence number: ");
-        JTextField sequenceNumberTextField = new JTextField(3);
+        sequenceNumberTextField = new JTextField(3);
         sequenceNumberLabel.setLabelFor(sequenceNumberTextField);
         JLabel timeLabel = new JLabel("Appearance time: ");
         appearanceTimeTextField = new JTextField(15);
@@ -63,11 +60,13 @@ public class CreateRouteFrame extends JFrame {
 
         JButton saveResultButton = new JButton("Save result");
         saveResultButton.addActionListener(new SaveResultAction());
-        JLabel stationTitleLabel = new JLabel("Station title: ");
-        stationTitleTextField = new JTextField(20);
-        stationTitleLabel.setLabelFor(stationTitleTextField);
-        stationPanel.add(stationTitleLabel);
-        stationPanel.add(stationTitleTextField);
+        JLabel routeTitleLabel = new JLabel("Route title: ");
+        routeTitleTextField = new JTextField(20);
+        JButton cleanFieldsButton = new JButton("Clean fields");
+        cleanFieldsButton.addActionListener(new CleanFieldsAction());
+        routeTitleLabel.setLabelFor(routeTitleTextField);
+        stationPanel.add(routeTitleLabel);
+        stationPanel.add(routeTitleTextField);
 
         stationPanel.add(stationBox);
         stationPanel.add(sequenceNumberLabel);
@@ -76,8 +75,11 @@ public class CreateRouteFrame extends JFrame {
         stationPanel.add(appearanceTimeTextField);
         stationPanel.add(createRouteButton);
         stationPanel.add(saveResultButton);
+        stationPanel.add(cleanFieldsButton);
         this.add(stationPanel);
     }
+
+
 
     class CreateRouteAction implements ActionListener {
         @Override
@@ -108,10 +110,22 @@ public class CreateRouteFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            route.setTitle(stationTitleTextField.getText());
+            route.setTitle(routeTitleTextField.getText());
             route.setStationDistances(distanceView.distanceList);
             String result = ClientSocket.getInstance().createRoute(route);
             JOptionPane.showMessageDialog(null, result);
+        }
+    }
+
+    private class CleanFieldsAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            appearanceTimeTextField.setText("");
+            routeTitleTextField.setText("");
+            sequenceNumberTextField.setText("");
+            routeTitleTextField.requestFocus();
+            distanceView.distanceList.clear();
+            distanceView.fireTableDataChanged();
         }
     }
 }
