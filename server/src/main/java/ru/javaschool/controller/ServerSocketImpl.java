@@ -30,18 +30,28 @@ public class ServerSocketImpl {
 
     public void startServer() {
         if (!isRunable) {
-            Socket socket;
+            Socket socket = null;
 
             try {
+                serverSocket = new ServerSocket(8080);
                 isRunable = true;
-                serverSocket = new ServerSocket(4444);
                 while (true) {
                     socket = serverSocket.accept();
                     poolConnections.execute(new SocketHandler(socket));
 
                 }
             } catch (IOException e) {
-                logger.error("IO error, starting server was failed caused by: " + e);
+                logger.error(e.getMessage());
+            } finally {
+                try {
+                    if (socket != null && !socket.isClosed())
+                        socket.close();
+                    if (serverSocket != null && !serverSocket.isClosed())
+                        serverSocket.close();
+                }
+                catch (Exception ex){
+                    logger.error(ex.getMessage());
+                }
             }
         }
     }
@@ -51,11 +61,11 @@ public class ServerSocketImpl {
      */
     public void shutDownServer() {
         try {
-            emf.close();
-            emf = null;
+            //emf.close();
+            //emf = null;
             serverSocket.close();
         } catch (IOException e) {
-            logger.error("IO error happend while closing a serverSocket: " + e);
+            logger.error(e.getMessage());
         }
         isRunable = false;
     }

@@ -41,19 +41,17 @@ public class SocketHandler implements Runnable {
             socket.close();
 
         } catch (IOException e) {
-            logger.error("IO error while running handling socket!" + e);
+            logger.error(e.getMessage());
         } catch (ClassNotFoundException e) {
-            logger.error("Class not found! " + e);
+            logger.error(e.getMessage());
         } finally {
-            if (!(socket != null && socket.isClosed())) {
-                try {
-                    if (socket != null) {
-                        socket.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    logger.error("Error while closing socket!" + e);
+            try {
+                if (!(socket != null && socket.isClosed())) {
+                    socket.close();
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
     }
@@ -69,6 +67,8 @@ public class SocketHandler implements Runnable {
 
         if (request.getTitle().equals("Get all trains")) {
             response = new Response((emplService.getTrainList()));
+        } else if (request.getTitle().equals("Get all stations")) {
+            response = new Response((emplService.getStationList()));
         } else if (request.getTitle().equals("Create train")) {
             response = new Response(emplService.createTrain((Train) request.getReqBody()));
         } else if (request.getTitle().equals("Create station")) {
@@ -85,6 +85,11 @@ public class SocketHandler implements Runnable {
             response = new Response(emplService.getRevisedScheduleList((ScheduleConstraints) request.getReqBody()));
         } else if (request.getTitle().equals("Get station by name")) {
             response = new Response(emplService.getStationByName((String) request.getReqBody()));
+        } else if (request.getTitle().equals("Create route")) {
+            emplService.createRoute((Route) request.getReqBody());
+            return new Response(null);
+        } else if (request.getTitle().equals("Create schedule")) {
+            response = new Response(emplService.createSchedule((Schedule) request.getReqBody()));
         } else {
             response = new Response(request.getTitle(), request.getTitle() + " - it is wrong request, try fix this.", true);
         }

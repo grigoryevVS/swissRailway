@@ -1,40 +1,21 @@
 package ru.javaschool.database.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 public class StationDistance implements Serializable {
 
     private static final long serialVersionUID = -2478846496713769074L;
 
-    @Id
-    private long stationDistanceId;
-    @Column(nullable = false)
-    private int sequenceNumber;
+    @EmbeddedId
+    private StationDistanceEPK key;
     @ManyToOne
     private Station station;
-    @ManyToOne
-    private Route route;
-
-    public long getStationDistanceId() {
-        return stationDistanceId;
-    }
-
-    public void setStationDistanceId(long stationDistanceId) {
-        this.stationDistanceId = stationDistanceId;
-    }
-
-    public int getSequenceNumber() {
-        return sequenceNumber;
-    }
-
-    public void setSequenceNumber(int sequenceNumber) {
-        this.sequenceNumber = sequenceNumber;
-    }
+    @Column
+    @Temporal(TemporalType.TIME)
+    private Date appearTime;
 
     public Station getStation() {
         return station;
@@ -44,20 +25,28 @@ public class StationDistance implements Serializable {
         this.station = station;
     }
 
-    public Route getRoute() {
-        return route;
+    public Date getAppearTime() {
+        return appearTime;
     }
 
-    public void setRoute(Route route) {
-        this.route = route;
+    public void setAppearTime(Date appearTime) {
+        this.appearTime = appearTime;
+    }
+
+    public StationDistanceEPK getKey() {
+        return key;
+    }
+
+    public void setKey(StationDistanceEPK key) {
+        this.key = key;
     }
 
     @Override
     public String toString() {
         return "StationDistance{" +
-                "stationDistanceId=" + stationDistanceId +
-                ", sequenceNumber=" + sequenceNumber +
+                "key=" + key +
                 ", station=" + station +
+                ", appearTime=" + appearTime +
                 '}';
     }
 }

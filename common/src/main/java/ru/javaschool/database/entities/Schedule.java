@@ -10,12 +10,14 @@ public class Schedule implements Serializable{
     private static final long serialVersionUID = -8783126071317237137L;
 
     @Id
+    @GeneratedValue
     private long scheduleId;
     @Column( nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date dateTrip;
-    @Column(nullable = false)
-    private int departureTime;
     @ManyToOne
+    private Train train;
+    @ManyToOne(fetch = FetchType.EAGER)
     private Route route;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="schedule")
     private List<Ticket> tickets;
@@ -44,14 +46,6 @@ public class Schedule implements Serializable{
         this.dateTrip = dateTrip;
     }
 
-    public int getDepartureTime() {
-        return departureTime;
-    }
-
-    public void setDepartureTime(int departureTime) {
-        this.departureTime = departureTime;
-    }
-
     public Route getRoute() {
         return route;
     }
@@ -60,13 +54,22 @@ public class Schedule implements Serializable{
         this.route = route;
     }
 
-    @Override                                   // need to be modified
+    public Train getTrain() {
+        return train;
+    }
+
+    public void setTrain(Train train) {
+        this.train = train;
+    }
+
+    @Override
     public String toString() {
         return "Schedule{" +
-                "route=" + route +
-                ", scheduleId=" + scheduleId +
+                "scheduleId=" + scheduleId +
                 ", dateTrip=" + dateTrip +
-                ", departureTime=" + departureTime +
+                ", train=" + train +
+                ", route=" + route +
+                ", tickets=" + tickets +
                 '}';
     }
 }

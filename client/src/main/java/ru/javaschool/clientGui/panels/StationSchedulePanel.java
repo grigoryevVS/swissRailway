@@ -1,7 +1,6 @@
 package ru.javaschool.clientGui.panels;
 
 
-import ru.javaschool.clientGui.views.ScheduleView;
 import ru.javaschool.clientGui.views.StationScheduleView;
 import ru.javaschool.clientMain.ClientSocket;
 import ru.javaschool.database.criteria.ScheduleConstraints;
@@ -18,7 +17,7 @@ public class StationSchedulePanel extends StandartPanel {
     private static final long serialVersionUID = -2571062697354965885L;
 
     private JTable scheduleTable;
-    private ScheduleView scheduleView;
+    private StationScheduleView scheduleView;
     private JTextField stationTextField;
 
     public StationSchedulePanel() {
@@ -57,21 +56,19 @@ public class StationSchedulePanel extends StandartPanel {
         this.add(east, BorderLayout.WEST);
 
         JButton setConstraintsButton = new JButton("Set constraints");
-        JButton getStandardScheduleButton = new JButton("Get schedule");
         JButton buyTicketButton = new JButton("Buy ticket");
 
         setConstraintsButton.addActionListener(new SetConstraintsAction());
-        buyTicketButton.addActionListener(new BuyTicketAction(scheduleTable));
+        buyTicketButton.addActionListener(new BuyTicketAction(scheduleTable, this));
 
         buttonPanel.add(setConstraintsButton);
-        buttonPanel.add(getStandardScheduleButton);
     }
 
     @Override
     void addViewPanel() {
 
         JPanel viewPanel = new JPanel();
-        scheduleView = new ScheduleView(new ArrayList<Schedule>());
+        scheduleView = new StationScheduleView(null, new ArrayList<Schedule>());
         this.add(viewPanel, BorderLayout.CENTER);
         scheduleTable = new JTable(scheduleView);
         scheduleTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);

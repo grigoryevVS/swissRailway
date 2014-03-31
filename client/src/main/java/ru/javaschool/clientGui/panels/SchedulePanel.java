@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class SchedulePanel extends StandartPanel {
 
-    private JTable scheduleTable;
+    public JTable scheduleTable;
     private TableModel scheduleView;
     public static JButton getRegisteredPassengersButton;
     private JTextField dateTripTextField;
@@ -58,6 +58,20 @@ public class SchedulePanel extends StandartPanel {
         conditionPanel.add(dateTripTextField);
     }
 
+
+    @Override
+    void addViewPanel() {
+        JPanel viewPanel = new JPanel();
+        scheduleView = new ScheduleView(new ArrayList<Schedule>());
+        this.add(viewPanel, BorderLayout.CENTER);
+        scheduleTable = new JTable(scheduleView);
+        scheduleTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        scheduleTable.setFillsViewportHeight(true);
+        JScrollPane scrollPane = new JScrollPane(scheduleTable);
+        viewPanel.add(scrollPane);
+
+    }
+
     @Override
     void addButtonPanel() {
 
@@ -84,7 +98,7 @@ public class SchedulePanel extends StandartPanel {
 
         getAllScheduleButton.addActionListener(new GetAllScheduleAction());
         getRevisedScheduleButton.addActionListener(new getRevisedScheduleAction());
-        buyTicketButton.addActionListener(new BuyTicketAction(scheduleTable));
+        buyTicketButton.addActionListener(new BuyTicketAction(scheduleTable, this));
         getRegisteredPassengersButton.addActionListener(new PassengerListAction());
         authorizationButton.addActionListener(new AuthorizationAction());
         logOutButton.addActionListener(new LogOutAction());
@@ -96,19 +110,6 @@ public class SchedulePanel extends StandartPanel {
         buttonPanel.add(authorizationButton);
         buttonPanel.add(logOutButton);
         buttonPanel.add(getRegisteredPassengersButton);
-    }
-
-    @Override
-    void addViewPanel() {
-        JPanel viewPanel = new JPanel();
-        scheduleView = new ScheduleView(new ArrayList<Schedule>());
-        this.add(viewPanel, BorderLayout.CENTER);
-        scheduleTable = new JTable(scheduleView);
-        scheduleTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        scheduleTable.setFillsViewportHeight(true);
-        JScrollPane scrollPane = new JScrollPane(scheduleTable);
-        viewPanel.add(scrollPane);
-
     }
 
     private class AuthorizationAction implements ActionListener {
@@ -154,8 +155,10 @@ public class SchedulePanel extends StandartPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                scheduleTable.setModel(new ScheduleView(ClientSocket.getInstance().getAllSchedule()));
-
+                java.util.List<Schedule> result = ClientSocket.getInstance().getAllSchedule();
+                if (result != null) {
+                    scheduleTable.setModel(new ScheduleView(result));
+                }
                 if (scheduleTable.getRowCount() == 0) {
                     JOptionPane.showMessageDialog(null, "Sorry,schedule is empty!");
                 }
@@ -170,11 +173,15 @@ public class SchedulePanel extends StandartPanel {
         public void actionPerformed(ActionEvent e) {
 
             ScheduleConstraints constraints = new ScheduleConstraints();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-            try {
-                constraints.setDate(dateFormat.parse(dateTripTextField.getText()));
-            } catch (ParseException e1) {
-                e1.printStackTrace();
+            if (!(dateTripTextField.getText().equals(""))) {
+                try {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+                    constraints.setDate(dateFormat.parse(dateTripTextField.getText()));
+                } catch (ParseException e1) {
+                    JOptionPane.showMessageDialog(null, "There is wrong format date, it should be dd.MM.yyyy");
+                    dateTripTextField.requestFocus();
+                    e1.printStackTrace();
+                }
             }
             if (!fromTextField.getText().equals("")) {
                 constraints.setStationFromName(fromTextField.getText());

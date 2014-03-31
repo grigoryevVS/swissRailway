@@ -8,6 +8,7 @@ public class Ticket implements Serializable{
     private static final long serialVersionUID = 7332983214543490707L;
 
     @Id
+    @GeneratedValue
     private long ticketId;
     @ManyToOne
     private Passenger passenger;
@@ -45,8 +46,6 @@ public class Ticket implements Serializable{
                 ", passenger=" + passenger.getFirstName() +
                 ", passenger=" + passenger.getLastName() +
                 ", schedule=" + schedule.getDateTrip() +
-                ", schedule=" + schedule.getDepartureTime() +
-                ", schedule=" + schedule.getRoute().getTrain() +
                 '}';
     }
 }

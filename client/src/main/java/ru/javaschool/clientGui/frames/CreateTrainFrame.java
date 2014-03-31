@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class CreateTrainFrame extends JFrame {
+
     public CreateTrainFrame() {
         super("Administrator creating trains!");
 
@@ -19,6 +20,8 @@ public class CreateTrainFrame extends JFrame {
         JPanel createTrainPanel = new CreateTrainPanel();
         this.add(createTrainPanel);
     }
+
+
 
     static class CreateTrainPanel extends JPanel {
 

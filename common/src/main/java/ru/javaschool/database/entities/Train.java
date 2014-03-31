@@ -1,22 +1,23 @@
 package ru.javaschool.database.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.validation.constraints.Min;
 import java.io.Serializable;
-import java.util.List;
 
 @Entity
-public class Train implements Serializable{
+public class  Train implements Serializable{
 
     private static final long serialVersionUID = -6808983024241846152L;
 
     @Id
     private long trainId;
     @Column( nullable = false)
+    @Min(1)
     private int numberOfSeats;
     @Column(nullable = false, length = 25)
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "train")
-    private List<Route> trainRoutes;
 
     public long getTrainId() {
         return trainId;
@@ -40,14 +41,6 @@ public class Train implements Serializable{
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<Route> getTrainRoutes() {
-        return trainRoutes;
-    }
-
-    public void setTrainRoutes(List<Route> trainRoutes) {
-        this.trainRoutes = trainRoutes;
     }
 
     @Override

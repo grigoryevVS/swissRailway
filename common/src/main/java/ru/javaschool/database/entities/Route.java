@@ -10,13 +10,12 @@ public class Route implements Serializable{
     private static final long serialVersionUID = 4245604106003040914L;
 
     @Id
-    private long routeId;                           //  it is a direction one way, not the whole route
-    @ManyToOne
-    private Train train;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="route")
+    @GeneratedValue
+    private long routeId;
+    @Column
+    private String title;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="key.route")
     private List<StationDistance> stationDistances;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="route")
-    private List<Schedule> schedules;
 
     public long getRouteId() {
         return routeId;
@@ -24,22 +23,6 @@ public class Route implements Serializable{
 
     public void setRouteId(long routeId) {
         this.routeId = routeId;
-    }
-
-    public Train getTrain() {
-        return train;
-    }
-
-    public void setTrain(Train train) {
-        this.train = train;
-    }
-
-    public List<Schedule> getSchedules() {
-        return schedules;
-    }
-
-    public void setSchedules(List<Schedule> schedules) {
-        this.schedules = schedules;
     }
 
     public List<StationDistance> getStationDistances() {
@@ -50,17 +33,20 @@ public class Route implements Serializable{
         this.stationDistances = stationDistances;
     }
 
-//    public String getDepartureStationName(){
-//        stationDistances.
-//    }
+    public String getTitle() {
+        return title;
+    }
 
-    //public void getDeparture
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     @Override
     public String toString() {
         return "Route{" +
                 "routeId=" + routeId +
-                ", train=" + train +
+                ", title='" + title + '\'' +
+                ", stationDistances=" + stationDistances +
                 '}';
     }
 }

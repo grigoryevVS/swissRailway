@@ -23,6 +23,7 @@ public class EmployeeService {
     private TicketDao ticketDao = new TicketDao();
     private ScheduleDao scheduleDao = new ScheduleDao();
     private PassengerDao passengerDao = new PassengerDao();
+    private RouteDao routeDao = new RouteDao();
 
     /**
      * This method implements getting list of trains, which are
@@ -36,11 +37,10 @@ public class EmployeeService {
         try {
             return trainDao.findAll();
         } catch (SQLException e) {
-            logger.error("Error while sql runs", e);
+            logger.error(e.getMessage());
             e.printStackTrace();
             return null;
         }
-
     }
 
     /**
@@ -56,14 +56,14 @@ public class EmployeeService {
             try {
                 trainDao.create(train);
             } catch (SQLException e) {
-                logger.error("Error while creating a train", e);
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
 
             transact.commit();
 
         } catch (RollbackException e) {
-            System.out.println("There is some error" + e.toString());
+            System.out.println(e.getMessage());
             if (transact.isActive()) {
                 transact.rollback();
             }
@@ -82,14 +82,14 @@ public class EmployeeService {
             try {
                 stationDao.create(station);
             } catch (SQLException e) {
-                logger.error("Error while creating a station", e);
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
 
             transact.commit();
 
         } catch (RollbackException e) {
-            System.out.println("There is some error" + e.toString());
+            System.out.println(e.getMessage());
             if (transact.isActive()) {
                 transact.rollback();
             }
@@ -105,17 +105,17 @@ public class EmployeeService {
      * @param ed - login and password of the employee.
      * @return -   true - if such data exist, and authorization passed, else return false.
      */
-    public boolean checkExist(EmployeeData ed) {        // done!
+    public boolean checkExist(EmployeeData ed) {
         employeeDataDao.getActualLogins();
         return employeeDataDao.getAuthorizeData().containsKey(ed.getLogin()) && employeeDataDao.getAuthorizeData().containsValue(ed.getPassword());
     }
 
-    public List<Schedule> getScheduleList() {            // done!
+    public List<Schedule> getScheduleList() {
         logger.debug("get trainMethod");
         try {
             return scheduleDao.findAll();
         } catch (SQLException e) {
-            logger.error("Error while sql runs", e);
+            logger.error(e.getMessage());
             e.printStackTrace();
             return null;
         }
@@ -144,7 +144,7 @@ public class EmployeeService {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return "Exception while sql works" + e;
+            return e.getMessage();
         }
     }
 
@@ -156,14 +156,14 @@ public class EmployeeService {
             try {
                 passengerDao.create(passenger);
             } catch (SQLException e) {
-                logger.error("Error while creating a station", e);
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
 
             transact.commit();
 
         } catch (RollbackException e) {
-            System.out.println("There is some error" + e.toString());
+            logger.error(e.getMessage());
             if (transact.isActive()) {
                 transact.rollback();
             }
@@ -179,7 +179,7 @@ public class EmployeeService {
             try {
                 ticketDao.create(ticket);
             } catch (SQLException e) {
-                logger.error("Error while creating a station", e);
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
 
@@ -190,7 +190,7 @@ public class EmployeeService {
             if (transact.isActive()) {
                 transact.rollback();
             }
-            return ("Fail, caused by " + e);
+            return (e.getMessage());
         }
 
     }
@@ -206,29 +206,88 @@ public class EmployeeService {
             try {
                 scheduleListDate = scheduleDao.findAll();
             } catch (SQLException e) {
-                logger.error("Error while SQL running", e);
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
         }
         if (!constraints.getStationFromName().equals("")) {
             scheduleSetStation = scheduleDao.getStationRevisedList(constraints.getStationFromName(), constraints.getStationToName());
-            scheduleSetStation.addAll(scheduleListDate);
-            scheduleListDate.clear();
-            scheduleListDate.addAll(scheduleSetStation);
+            if (scheduleListDate != null) {
+                scheduleSetStation.addAll(scheduleListDate);
+                scheduleListDate.clear();
+                scheduleListDate.addAll(scheduleSetStation);
+            }
         }
         return scheduleListDate;
     }
 
     public Station getStationByName(String stationName) {
-
-        Station resultStation = null;
         try {
-            stationDao.findByName(stationName);
+            return stationDao.findByName(stationName);
         } catch (SQLException e) {
-            logger.error("Error while SQL running" + e);
+            logger.error(e.getMessage());
             e.printStackTrace();
+            return null;
         }
+    }
 
-        return resultStation;
+    public List<Station> getStationList() {
+        logger.debug("get trainMethod");
+        try {
+            return stationDao.findAll();
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    public void createRoute(Route route) {
+        EntityManager em = EmfInit.em;
+        EntityTransaction transact = em.getTransaction();
+        try {
+            transact.begin();
+            try {
+                routeDao.insert(route);
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+                e.printStackTrace();
+            }
+
+            transact.commit();
+
+        } catch (RollbackException e) {
+            logger.error(e.getMessage());
+            if (transact.isActive()) {
+                transact.rollback();
+            }
+        }
+    }
+
+    public String createSchedule(Schedule schedule) {
+        EntityManager em = EmfInit.em;
+        EntityTransaction transact = em.getTransaction();
+        String result = "Success";
+        try {
+            transact.begin();
+            try {
+                scheduleDao.create(schedule);
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+                e.printStackTrace();
+                return e.getMessage();
+            }
+
+            transact.commit();
+            return result;
+
+        } catch (RollbackException e) {
+            logger.error(e.getMessage());
+            if (transact.isActive()) {
+                transact.rollback();
+            }
+            return e.getMessage();
+        }
     }
 }

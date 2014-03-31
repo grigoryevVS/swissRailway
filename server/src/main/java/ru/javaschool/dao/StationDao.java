@@ -13,7 +13,7 @@ public class StationDao extends GenericDaoHiberImpl<Station, Long> {
 
     public Station findByName(String name) throws SQLException {
         Station resultStation = em.createQuery("select s from Station s " +
-                "where s.name =: name", Station.class).setParameter("name", name).getSingleResult();
+                "where s.name =:name", Station.class).setParameter("name", name).getSingleResult();
         return resultStation;
     }
 }

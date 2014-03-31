@@ -95,14 +95,12 @@ public class BuyTicketFrame extends JFrame {
                 }
                 long scheduleId = (Long) scheduleTable.getValueAt(scheduleTable.getSelectedRow(), 0);
                 Response response = ClientSocket.getInstance().buyTicket(scheduleId, passenger);
-                /*
-                if (response.error) {
-				JOptionPane.showMessageDialog(parent, "Error: " + response.message);
-			}
-			else {
-				JOptionPane.showMessageDialog(parent, "Thank you!");
-			}
-                 */
+                if (response.getIsProblem()) {
+                    JOptionPane.showMessageDialog(null, "Error: " + response.getTitle());
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "Congratulation!");
+                }
             }
         }
     }

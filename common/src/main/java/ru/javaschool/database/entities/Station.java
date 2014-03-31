@@ -1,8 +1,9 @@
 package ru.javaschool.database.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.io.Serializable;
-import java.util.List;
 
 @Entity
 public class Station implements Serializable{
@@ -13,9 +14,6 @@ public class Station implements Serializable{
     private long stationId;
     @Column(nullable = false, length = 30)
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "station")
-    private List<StationDistance> stationDistances;
-
 
     public long getStationId() {
         return stationId;
@@ -31,14 +29,6 @@ public class Station implements Serializable{
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<StationDistance> getStationDistances() {
-        return stationDistances;
-    }
-
-    public void setStationDistances(List<StationDistance> stationDistances) {
-        this.stationDistances = stationDistances;
     }
 
     @Override

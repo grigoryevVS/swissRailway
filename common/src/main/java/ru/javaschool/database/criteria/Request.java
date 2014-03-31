@@ -32,4 +32,11 @@ public class Request implements Serializable{
         this.reqBody = obj;
     }
 
+    @Override
+    public String toString() {
+        return "Request{" +
+                "title='" + title + '\'' +
+                ", reqBody=" + reqBody +
+                '}';
+    }
 }

@@ -20,7 +20,7 @@ public class TicketDao extends GenericDaoHiberImpl<Ticket, Long> {
         String result;
 
         // check, that this passenger already bougth ticket on this train!
-        Query existQuery = getEm().createQuery ("select t from Ticket t where t.passenger =: passenger and t.schedule =: schedule", Ticket.class);
+        Query existQuery = getEm().createQuery ("select t from Ticket t where t.passenger =:passenger and t.schedule =:schedule", Ticket.class);
         existQuery.setParameter("passenger", p);
         existQuery.setParameter("schedule", s);
 
@@ -30,11 +30,11 @@ public class TicketDao extends GenericDaoHiberImpl<Ticket, Long> {
         }
 
         // check, that train is already full, and there is no tickets on it!
-        Query querySeats = getEm().createQuery("select count(t) from Ticket t where t.schedule =: schedule");
+        Query querySeats = getEm().createQuery("select count(t) from Ticket t where t.schedule =:schedule");
         querySeats.setParameter("schedule", s);
 
         int soldTickets = ((Long) querySeats.getSingleResult()).intValue();
-        int trainCapacity = s.getRoute().getTrain().getNumberOfSeats();
+        int trainCapacity = s.getTrain().getNumberOfSeats();
         if (soldTickets >= trainCapacity) {
             return "Sorry, this train is already full!";
         }
@@ -42,7 +42,7 @@ public class TicketDao extends GenericDaoHiberImpl<Ticket, Long> {
         // check, that this train will depart in 10 minutes!
         //DateTime
         Duration interval = new Duration(600 * 1000L);
-        DateTime departureTime = new DateTime(s.getDepartureTime());
+        DateTime departureTime = new DateTime(s.getDateTrip());
         DateTime currentTime = new DateTime();
         //LocalTime departTime = new LocalTime(s.getSchedTemplate().getSchedTemplateLines().get(0).getTimePass());
         //departureTime = departureTime.plus(departTime.getMillisOfDay());

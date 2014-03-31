@@ -51,4 +51,13 @@ public class Response implements Serializable{
     public void setProblem(boolean isProblem) {
         this.isProblem = isProblem;
     }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "title='" + title + '\'' +
+                ", respBody=" + respBody +
+                ", isProblem=" + isProblem +
+                '}';
+    }
 }

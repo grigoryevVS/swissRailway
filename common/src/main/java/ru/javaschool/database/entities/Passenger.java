@@ -16,6 +16,7 @@ public class Passenger implements Serializable{
     @Column( nullable = false, length = 20)
     private String lastName;
     @Column( nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date birthDate;
 
     public Passenger() {

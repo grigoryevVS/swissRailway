@@ -24,14 +24,14 @@ public class ScheduleDao extends GenericDaoHiberImpl<Schedule, Long> {
      * @return -   return List of passengers.
      */
     public List<Passenger> getAllRegisteredOnTrain(Schedule schedule) {
-        Query query = getEm().createQuery("select t.passenger from Ticket t where t.schedule.scheduleId =: scheduleId");
+        Query query = getEm().createQuery("select t.passenger from Ticket t where t.schedule.scheduleId =:scheduleId");
         query.setParameter("scheduleId", schedule.getScheduleId());
         return query.getResultList();
     }
 
     public List<Schedule> getDateRevisedList(Date date) {
 
-        Query dateQuery = getEm().createQuery("select s from Schedule s where s.dateTrip =: dateDeparture", Schedule.class);
+        Query dateQuery = getEm().createQuery("select s from Schedule s where s.dateTrip =:dateDeparture", Schedule.class);
         dateQuery.setParameter("dateDeparture", date);
         return dateQuery.getResultList();
     }

@@ -1,9 +1,12 @@
 package ru.javaschool.clientGui.panels;
 
+import ru.javaschool.clientGui.frames.CreateRouteFrame;
 import ru.javaschool.clientGui.frames.CreateStationFrame;
 import ru.javaschool.clientGui.frames.CreateTrainFrame;
 import ru.javaschool.clientGui.views.TrainView;
 import ru.javaschool.clientMain.ClientSocket;
+import ru.javaschool.database.entities.Route;
+import ru.javaschool.database.entities.Schedule;
 import ru.javaschool.database.entities.Train;
 
 import javax.swing.*;
@@ -11,13 +14,14 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 
 public class AdministratorPanel extends StandartPanel {
 
     private JTable trainTable;
-    private TableModel trainView;
     private JPanel viewPanel;
 
     public AdministratorPanel() {
@@ -50,14 +54,20 @@ public class AdministratorPanel extends StandartPanel {
         JButton createNewStationButton = new JButton("CreateStation");
         JButton createNewTrainButton = new JButton("CreateTrain");
         JButton getAllTrainsButton = new JButton("Get all trains");
+        JButton createNewRouteButton = new JButton("CreateRoute");
+        JButton createNewScheduleButton = new JButton("CreateSchedule");
 
         getAllTrainsButton.addActionListener(new GetAllTrainsAction());
         createNewTrainButton.addActionListener(new CreateTrainAction());
         createNewStationButton.addActionListener(new CreateStationAction());
+        createNewRouteButton.addActionListener(new CreateRouteAction());
+        createNewScheduleButton.addActionListener(new CreateScheduleAction());
 
         buttonPanel.add(createNewStationButton);
         buttonPanel.add(createNewTrainButton);
         buttonPanel.add(getAllTrainsButton);
+        buttonPanel.add(createNewRouteButton);
+        buttonPanel.add(createNewScheduleButton);
     }
 
     @Override
@@ -65,7 +75,7 @@ public class AdministratorPanel extends StandartPanel {
         viewPanel = new JPanel();
         this.add(viewPanel, BorderLayout.CENTER);
 
-        trainView = new TrainView(new ArrayList<Train>());
+        TableModel trainView = new TrainView(new ArrayList<Train>());
         trainTable = new JTable(trainView);
         trainTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         trainTable.setFillsViewportHeight(true);
@@ -95,6 +105,15 @@ public class AdministratorPanel extends StandartPanel {
 
     private class CreateTrainAction implements ActionListener {
 
+        private JTable trainTable;
+
+        private CreateTrainAction() {
+        }
+
+        private CreateTrainAction(JTable trainTable) {
+            this.trainTable = trainTable;
+        }
+
         @Override
         public void actionPerformed(ActionEvent e) {
             new CreateTrainFrame();
@@ -107,4 +126,56 @@ public class AdministratorPanel extends StandartPanel {
             new CreateStationFrame();
         }
     }
+
+    private class CreateRouteAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+            new CreateRouteFrame();
+        }
+    }
+
+    private class CreateScheduleAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JPanel panel = new JPanel();
+            java.util.List<Route> routeList = ClientSocket.getInstance().getAllRoutes();
+            JComboBox<?> comboBoxTrain;
+            JComboBox<?> comboBoxRoute;
+            if (routeList == null) {
+                comboBoxRoute = new JComboBox<Object>();
+                comboBoxTrain = new JComboBox<Object>();
+                panel.add(comboBoxRoute);
+                panel.add(comboBoxTrain);
+            } else {
+                comboBoxRoute = new JComboBox<Object>(routeList.toArray());
+                java.util.List<Train> trainList = ClientSocket.getInstance().getAllTrains();
+                comboBoxTrain = new JComboBox<Object>(trainList.toArray());
+                panel.add(comboBoxRoute);
+                panel.add(comboBoxTrain);
+            }
+
+            panel.add(new JLabel("Date departure:"));
+            JTextField dateRelease = new JTextField(10);
+            panel.add(dateRelease);
+
+            int result = JOptionPane.showConfirmDialog(null, panel,
+                    "Add schedule information", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                Schedule schedule = new Schedule();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+                try {
+                    schedule.setDateTrip(dateFormat.parse(dateRelease.getText()));
+                } catch (ParseException exception) {
+                    JOptionPane.showMessageDialog(null, "Wrong date format");
+                    return;
+                }
+                schedule.setRoute((Route) comboBoxRoute.getSelectedItem());
+                schedule.setTrain((Train) comboBoxTrain.getSelectedItem());
+                final String message = ClientSocket.getInstance().createSchedule(schedule);
+                JOptionPane.showMessageDialog(null, message);
+            }
+        }
+    }
 }
+
