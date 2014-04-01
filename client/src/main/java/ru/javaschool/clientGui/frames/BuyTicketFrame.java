@@ -58,49 +58,49 @@ public class BuyTicketFrame extends JFrame {
 
         private class BuyTicketAction implements ActionListener {
 
-            Passenger passenger;
 
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                Passenger passenger = new Passenger();
                 Pattern p = Pattern.compile("\\d", Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
                 Matcher m = p.matcher(firstNameTextField.getText());
-
-                if (firstNameTextField.getText().equals("") || firstNameTextField.getText().charAt(0) == ' ' || m.find()) {
+                if (firstNameTextField.getText().equals("") || m.find()) {
                     JOptionPane.showMessageDialog(null, "FirstName must be specified correctly!");
-                    firstNameTextField.setText("");
-                    firstNameTextField.requestFocus();
-                } else {
-                    passenger.setFirstName(firstNameTextField.getText());
-                }
-                if (lastNameTextField.getText().equals("") || lastNameTextField.getText().charAt(0) == ' ' || m.find()) {
+                    clearFields();
+                } else if (lastNameTextField.getText().equals("") || m.find()) {
                     JOptionPane.showMessageDialog(null, "LastName must be specified!");
-                    lastNameTextField.setText("");
-                    lastNameTextField.requestFocus();
-                } else {
-                    passenger.setLastName(lastNameTextField.getText());
-                }
-                if (birthDateTextField.getText().equals("")) {
+                    clearFields();
+                } else if (birthDateTextField.getText().equals("")) {
                     JOptionPane.showMessageDialog(null, "BirthDate must be specified!");
-                    birthDateTextField.requestFocus();
+                    clearFields();
                 } else {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
                     try {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
                         passenger.setBirthDate(dateFormat.parse(birthDateTextField.getText()));
                     } catch (ParseException ex) {
                         JOptionPane.showMessageDialog(null, "Wrong dateFormat! It should be DD.MM.YYYY");
-                        birthDateTextField.requestFocus();
+                        clearFields();
                         ex.printStackTrace();
                     }
+                    passenger.setFirstName(firstNameTextField.getText());
+                    passenger.setLastName(lastNameTextField.getText());
                 }
+
                 long scheduleId = (Long) scheduleTable.getValueAt(scheduleTable.getSelectedRow(), 0);
                 Response response = ClientSocket.getInstance().buyTicket(scheduleId, passenger);
-                if (response.getIsProblem()) {
-                    JOptionPane.showMessageDialog(null, "Error: " + response.getTitle());
-                }
-                else {
+                if (response == null || response.getIsProblem()) {
+                    JOptionPane.showMessageDialog(null, "Error!");
+                } else {
                     JOptionPane.showMessageDialog(null, "Congratulation!");
                 }
+            }
+
+            private void clearFields(){
+                firstNameTextField.setText("");
+                lastNameTextField.setText("");
+                birthDateTextField.setText("");
+                firstNameTextField.requestFocus();
             }
         }
     }

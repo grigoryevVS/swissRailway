@@ -1,16 +1,24 @@
 package ru.javaschool.database.entities;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.util.Date;
 
 @Entity
+@IdClass(StationDistanceEPK.class)
 public class StationDistance implements Serializable {
 
     private static final long serialVersionUID = -2478846496713769074L;
 
-    @EmbeddedId
-    private StationDistanceEPK key;
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "routeId")
+    private Route route;
+    @Id
+    @Column
+    @Min(1)
+    private int sequenceNumber;
     @ManyToOne
     private Station station;
     @Column
@@ -33,20 +41,26 @@ public class StationDistance implements Serializable {
         this.appearTime = appearTime;
     }
 
-    public StationDistanceEPK getKey() {
-        return key;
+    public Route getRoute() {
+        return route;
     }
 
-    public void setKey(StationDistanceEPK key) {
-        this.key = key;
+    public void setRoute(Route route) {
+        this.route = route;
+    }
+
+    public int getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public void setSequenceNumber(int sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
     }
 
     @Override
     public String toString() {
-        return "StationDistance{" +
-                "key=" + key +
-                ", station=" + station +
-                ", appearTime=" + appearTime +
-                '}';
+        return
+                "key=" + route
+               ;
     }
 }

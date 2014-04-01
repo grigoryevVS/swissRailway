@@ -8,10 +8,7 @@ import ru.javaschool.database.criteria.SampleObject;
 import ru.javaschool.database.criteria.ScheduleConstraints;
 import ru.javaschool.database.entities.*;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.List;
 
@@ -42,7 +39,6 @@ public class ClientSocket {
             ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(clientSock.getOutputStream()));
             out.writeObject(request);
             out.flush();
-            clientSock.shutdownOutput();
 
             ObjectInputStream in = new ObjectInputStream(clientSock.getInputStream());
             resultResponse = (Response) in.readObject();
@@ -154,7 +150,7 @@ public class ClientSocket {
 
     public Response buyTicket(long scheduleId, Passenger passenger) {
 
-        return new ClientSocket().getResponse
+        return ClientSocket.getInstance().getResponse
                 (new Request(("Buy ticket"), new SampleObject<Long, Passenger>(scheduleId, passenger)));
     }
 
@@ -194,5 +190,10 @@ public class ClientSocket {
             // TODO error
         }
         return resultList;
+    }
+
+    public Schedule getScheduleById(Long id) {
+        Response response = ClientSocket.getInstance().getResponse(new Request("Get schedule by id",id));
+        return (Schedule) response.getRespBody();
     }
 }

@@ -30,8 +30,8 @@ public class SchedulePanel extends StandartPanel {
     public SchedulePanel() {
         super(new BorderLayout());
         this.addConditionPanel();
-        this.addButtonPanel();
         this.addViewPanel();
+        this.addButtonPanel();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class SchedulePanel extends StandartPanel {
         JLabel to = new JLabel("TO");
         toTextField = new JTextField(14);
         to.setLabelFor(toTextField);
-        JLabel dateTripLabel = new JLabel("Date trip");
+        JLabel dateTripLabel = new JLabel("Date trip(dd.MM.yyyy)");
         dateTripTextField = new JTextField(8);
         dateTripLabel.setLabelFor(dateTripTextField);
 
@@ -58,7 +58,6 @@ public class SchedulePanel extends StandartPanel {
         conditionPanel.add(dateTripTextField);
     }
 
-
     @Override
     void addViewPanel() {
         JPanel viewPanel = new JPanel();
@@ -69,7 +68,6 @@ public class SchedulePanel extends StandartPanel {
         scheduleTable.setFillsViewportHeight(true);
         JScrollPane scrollPane = new JScrollPane(scheduleTable);
         viewPanel.add(scrollPane);
-
     }
 
     @Override
@@ -92,9 +90,9 @@ public class SchedulePanel extends StandartPanel {
         JButton authorizationButton = new JButton("Authorization");
         JButton logOutButton = new JButton("Log out");
         getRegisteredPassengersButton = new JButton("Get registered passengers");
-        if (!ClientFrame.registered) {
+        //if (!ClientFrame.registered) {
             getRegisteredPassengersButton.setVisible(false);
-        }
+        //}
 
         getAllScheduleButton.addActionListener(new GetAllScheduleAction());
         getRevisedScheduleButton.addActionListener(new getRevisedScheduleAction());
@@ -123,30 +121,21 @@ public class SchedulePanel extends StandartPanel {
         }
     }
 
-//    public class BuyTicketAction implements ActionListener {
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//            if (scheduleTable.getSelectedRow() == -1) {
-//                JOptionPane.showMessageDialog(null, "Choose concrete schedule!");
-//            } else {
-//                new BuyTicketFrame(scheduleTable);
-//            }
-//        }
-//    }
-
     private class PassengerListAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (scheduleTable.getSelectedRow() == -1) {
                 JOptionPane.showMessageDialog(null, "Please, select concrete row in the scheduleList!");
             } else {
-                new RegisteredPassengersFrame(getActualSchedule());
+                Schedule schedule = ClientSocket.getInstance().getScheduleById(getActualSchedule());
+                new RegisteredPassengersFrame(schedule);
             }
         }
 
-        private Schedule getActualSchedule() {
-            Schedule actualSchedule = (Schedule) scheduleView.getValueAt(scheduleTable.getSelectedRow(), scheduleTable.getSelectedColumn());
-            return actualSchedule;
+        private Long getActualSchedule() {
+            int row = scheduleTable.getSelectedRow();
+            int col = scheduleTable.getSelectedColumn();
+            return (Long) scheduleView.getValueAt(row, col);
         }
 
     }
@@ -173,7 +162,7 @@ public class SchedulePanel extends StandartPanel {
         public void actionPerformed(ActionEvent e) {
 
             ScheduleConstraints constraints = new ScheduleConstraints();
-            if (!(dateTripTextField.getText().equals(""))) {
+            if (!(dateTripTextField.getText().isEmpty())) {
                 try {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
                     constraints.setDate(dateFormat.parse(dateTripTextField.getText()));
@@ -183,23 +172,21 @@ public class SchedulePanel extends StandartPanel {
                     e1.printStackTrace();
                 }
             }
-            if (!fromTextField.getText().equals("")) {
+            if (!fromTextField.getText().isEmpty()) {
                 constraints.setStationFromName(fromTextField.getText());
             }
-            if (!toTextField.getText().equals("")) {
+            if (!toTextField.getText().isEmpty()) {
                 constraints.setStationToName(toTextField.getText());
             } else {
                 constraints.setStationToName("not selected");
             }
-
-            try {
+            if (fromTextField.getText().isEmpty() && toTextField.getText().isEmpty() && dateTripTextField.getText().isEmpty()) {
+                scheduleTable.setModel(new ScheduleView((ClientSocket.getInstance().getAllSchedule())));
+            } else {
                 scheduleTable.setModel(new ScheduleView(ClientSocket.getInstance().getRevisedSchedule(constraints)));
-
-                if (scheduleTable.getRowCount() == 0) {
-                    JOptionPane.showMessageDialog(null, "Sorry,there are no trains with that conditions!");
-                }
-            } catch (Exception exc) {
-                JOptionPane.showMessageDialog(null, "Sorry, server is not available!");
+            }
+            if (scheduleTable.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(null, "Sorry,there are no trains with that conditions!");
             }
         }
     }

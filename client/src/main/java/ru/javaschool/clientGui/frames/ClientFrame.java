@@ -31,6 +31,7 @@ public class ClientFrame extends JFrame {
         bookmark.addTab("Station schedule", new StationSchedulePanel());
 
         this.add(bookmark, BorderLayout.CENTER);     // maybe i will do it borderLayout.center!
+        pack();
 
 
     }

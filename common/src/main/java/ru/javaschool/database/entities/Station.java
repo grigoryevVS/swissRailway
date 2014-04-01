@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import java.io.Serializable;
 
 @Entity
-public class Station implements Serializable{
+public class Station implements Serializable {
 
     private static final long serialVersionUID = -8507927853458358682L;
 
@@ -33,9 +33,9 @@ public class Station implements Serializable{
 
     @Override
     public String toString() {
-        return "Station{" +
-                "name='" + name + '\'' +
-                ", stationId=" + stationId +
-                '}';
+        if (stationId == 0) {
+            return "";
+        }
+        return stationId + ". " + name;
     }
 }

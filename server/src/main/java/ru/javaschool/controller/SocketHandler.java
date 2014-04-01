@@ -34,7 +34,6 @@ public class SocketHandler implements Runnable {
             ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
             outStream.writeObject(actualResponse);
             outStream.flush();
-            socket.shutdownOutput();
             socket.close();
 
         } catch (IOException e) {
@@ -43,7 +42,7 @@ public class SocketHandler implements Runnable {
             logger.error(e.getMessage());
         } finally {
             try {
-                if (!(socket != null && socket.isClosed())) {
+                if ((socket != null && !socket.isClosed())) {
                     socket.close();
                 }
             } catch (IOException e) {
@@ -89,6 +88,8 @@ public class SocketHandler implements Runnable {
             response = new Response(emplService.createSchedule((Schedule) request.getReqBody()));
         } else if(request.getTitle().equals("Get all routes")) {
             response = new Response((Serializable) emplService.getRouteList());
+        } else if(request.getTitle().equals("Get schedule by id")){
+            response = new Response((Serializable) emplService.getScheduleById((Long) request.getReqBody()));
         } else {
             response = new Response(request.getTitle(), request.getTitle() + " - it is wrong request, try fix this.", true);
         }

@@ -1,21 +1,14 @@
 package ru.javaschool.database.entities;
 
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.Min;
 import java.io.Serializable;
 
-@Embeddable
+
 public class StationDistanceEPK implements Serializable {
     private static final long serialVersionUID = 1312321L;
-    @ManyToOne
-    @JoinColumn(name = "route_routeId")
+
     private Route route;
-    @Column
-	@Min(1)
+
     private int sequenceNumber;
 
     public StationDistanceEPK() {
@@ -60,13 +53,5 @@ public class StationDistanceEPK implements Serializable {
         int result = route != null ? route.hashCode() : 0;
         result = 31 * result + sequenceNumber;
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "StationDistanceEPK{" +
-                "route=" + route +
-                ", sequenceNumber=" + sequenceNumber +
-                '}';
     }
 }

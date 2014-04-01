@@ -1,26 +1,27 @@
 package ru.javaschool.database.entities;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.LocalTime;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+
 @Entity
-public class Schedule implements Serializable{
+public class Schedule implements Serializable {
 
     private static final long serialVersionUID = -8783126071317237137L;
 
     @Id
-    @GeneratedValue
     private long scheduleId;
-    @Column( nullable = false)
+    @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date dateTrip;
     @ManyToOne
     private Train train;
     @ManyToOne(fetch = FetchType.EAGER)
     private Route route;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="schedule")
-    private List<Ticket> tickets;
 
     public long getScheduleId() {
         return scheduleId;
@@ -28,14 +29,6 @@ public class Schedule implements Serializable{
 
     public void setScheduleId(long scheduleId) {
         this.scheduleId = scheduleId;
-    }
-
-    public List<Ticket> getTickets() {
-        return tickets;
-    }
-
-    public void setTickets(List<Ticket> tickets) {
-        this.tickets = tickets;
     }
 
     public Date getDateTrip() {
@@ -62,14 +55,27 @@ public class Schedule implements Serializable{
         this.train = train;
     }
 
-    @Override
-    public String toString() {
-        return "Schedule{" +
-                "scheduleId=" + scheduleId +
-                ", dateTrip=" + dateTrip +
-                ", train=" + train +
-                ", route=" + route +
-                ", tickets=" + tickets +
-                '}';
+    public Date getDepartTime(Station station) {
+        long stationId = 0;
+        if (station != null)
+            stationId = station.getStationId();
+        DateTime departDate = new DateTime(dateTrip);
+        Date arriveTime = null;
+        for (StationDistance distance : route.getStationDistances()) {
+            if (arriveTime != null) {
+                long difference = distance.getAppearTime().getTime() - arriveTime.getTime();
+                if (difference < 0)
+                    difference += 24 * 3600 * 1000;
+                departDate = departDate.plus(new Duration(difference));
+            }
+            else {
+                LocalTime departTime = new LocalTime(distance.getAppearTime());
+                departDate = departDate.plus(departTime.getMillisOfDay());
+            }
+            arriveTime = distance.getAppearTime();
+            if (distance.getStation().getStationId() == stationId)
+                break;
+        }
+        return departDate.toDate();
     }
 }

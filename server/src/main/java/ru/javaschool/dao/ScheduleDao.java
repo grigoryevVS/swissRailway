@@ -73,24 +73,3 @@ public class ScheduleDao extends GenericDaoHiberImpl<Schedule, Long> {
         return resultSet;
     }
 }
-/*
-        List<Schedule> ret = new ArrayList<Schedule>();
-
-		if (sf.stationIdFrom == 0)
-			ret = schedules;
-		else {
-			for (Schedule s : schedules) {
-				List<SchedTemplateLines> lines = s.getSchedTemplate().getSchedTemplateLines();
-				boolean firstStation = false;
-				boolean secondStation = false;
-				for (SchedTemplateLines l : lines) {
-					if (!firstStation && l.getStation().getId() == sf.stationIdFrom)
-						firstStation = true;
-					if (firstStation && l.getStation().getId() == sf.stationIdTo)
-						secondStation = true;
-				}
-				if (firstStation && (secondStation || sf.stationIdTo == 0))
-					ret.add(s);
-			}
-		}
-         */

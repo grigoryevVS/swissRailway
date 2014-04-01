@@ -4,14 +4,14 @@
     <persistence-unit name="railway"  transaction-type="RESOURCE_LOCAL">
 
       <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <class>ru.javaschool.database.entities.Train</class>
-        <class>ru.javaschool.database.entities.Route</class>
-        <class>ru.javaschool.database.entities.EmployeeData</class>
-        <class>ru.javaschool.database.entities.Passenger</class>
-        <class>ru.javaschool.database.entities.Station</class>
-        <class>ru.javaschool.database.entities.Schedule</class>
-        <class>ru.javaschool.database.entities.Ticket</class>
-        <class>ru.javaschool.database.entities.StationDistance</class>
+        <!--<class>ru.javaschool.database.entities.Train</class>-->
+        <!--<class>ru.javaschool.database.entities.Route</class>-->
+        <!--<class>ru.javaschool.database.entities.EmployeeData</class>-->
+        <!--<class>ru.javaschool.database.entities.Passenger</class>-->
+        <!--<class>ru.javaschool.database.entities.Station</class>-->
+        <!--<class>ru.javaschool.database.entities.Schedule</class>-->
+        <!--<class>ru.javaschool.database.entities.Ticket</class>-->
+        <!--<class>ru.javaschool.database.entities.StationDistance</class>-->
       <properties>
       	    <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/swissrailway"/>

@@ -36,8 +36,9 @@ public class RouteDao extends GenericDaoHiberImpl<Route, Long> {
 
         create(route);
         if (route.getStationDistances() != null) {
+            StationDistanceDao stDao = new StationDistanceDao();
             for (StationDistance sd : route.getStationDistances()) {
-                new StationDistanceDao().create(sd);
+                stDao.create(sd);
             }
         }
     }

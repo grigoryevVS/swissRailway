@@ -12,10 +12,10 @@ import java.util.List;
 public class StationScheduleView extends AbstractTableModel{
 
     enum StationScheduleColumn {
-        ID, TRAIN_ID, STATION_TO,
-        DATE_TIME
+        ID, ROUTE_TITLE, TRAIN_ID, STATION_TO,
+        DATETIME_DEPART
     }
-    private final String[] columns = {"Id", "TrainId", "StationTo",
+    private final String[] columns = {"Id", "RouteTitle", "TrainId", "StationTo",
            "Residence time"};
     private Station station;
     private List<Schedule> scheduleList;
@@ -34,7 +34,7 @@ public class StationScheduleView extends AbstractTableModel{
 
     @Override
     public int getColumnCount() {
-        return 4;
+        return 5;
     }
 
     @Override
@@ -43,17 +43,22 @@ public class StationScheduleView extends AbstractTableModel{
         StationScheduleColumn scheduleColumn = StationScheduleColumn.values()[columnIndex];
         List<StationDistance> stationDistanceList = schedule.getRoute().getStationDistances();
 
-        // output of data in new format, with date and time!
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
         switch (scheduleColumn){
             case ID: return schedule.getScheduleId();
+            case ROUTE_TITLE: return schedule.getRoute().getTitle();
             case TRAIN_ID: return schedule.getTrain().getTrainId();
             case STATION_TO: return stationDistanceList.get(stationDistanceList.size() - 1).getStation().getName();
-            case DATE_TIME: return schedule.getDateTrip();
+            case DATETIME_DEPART:  return dateFormat.format(schedule.getDepartTime(station));
             default: return null;
         }
     }
+    /*
+    case DATETIME_PASS:
+				return station != null ? Global.dateTimeFormat.format(schedule.getStationDateTime(station)) : "";
+			case DATETIME_ARRIVAL: return Global.dateTimeFormat.format(schedule.getFinalStationDateTime());
+     */
 
     @Override
     public String getColumnName(int c) {

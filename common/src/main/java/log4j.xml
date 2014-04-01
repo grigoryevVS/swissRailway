@@ -16,6 +16,16 @@
         </filter>
     </appender>
 
+    <appender name="CONSOLE-DEBUG" class="org.apache.log4j.ConsoleAppender">
+        <param name="target" value="System.err"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} [%5p] %m at %l%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="DEBUG"/>
+        </filter>
+    </appender>
+
     <appender name="ORM" class="org.apache.log4j.RollingFileAppender">
         <param name="File" value="orm.log"/>
         <param name="MaxFileSize" value="10MB"/>
@@ -24,16 +34,6 @@
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{ISO8601} [%5p] %c %m at %l%n"/>
         </layout>
-    </appender>
-
-    <appender name="CONSOLE-WARN" class="org.apache.log4j.ConsoleAppender">
-        <param name="target" value="System.err"/>
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{ISO8601} [%5p] %m at %l%n"/>
-        </layout>
-        <filter class="org.apache.log4j.varia.LevelRangeFilter">
-            <param name="LevelMin" value="WARN"/>
-        </filter>
     </appender>
 
     <category name="org.hibernate" additivity="false">

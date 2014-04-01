@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.RollbackException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +25,7 @@ public class EmployeeService {
     private ScheduleDao scheduleDao = new ScheduleDao();
     private PassengerDao passengerDao = new PassengerDao();
     private RouteDao routeDao = new RouteDao();
+    private StationDistanceDao dao = new StationDistanceDao();
 
     /**
      * This method implements getting list of trains, which are
@@ -121,6 +123,16 @@ public class EmployeeService {
         }
     }
 
+    public Schedule getScheduleById(Long id){
+
+        try {
+            return scheduleDao.findByPK(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public List<Passenger> getAllRegisteredPassOnTrain(Schedule schedule) {      // done!
         return scheduleDao.getAllRegisteredOnTrain(schedule);
     }
@@ -154,6 +166,7 @@ public class EmployeeService {
         try {
             transact.begin();
             try {
+                passenger.setPassengerId((Long) em.createQuery("select count (p) from Passenger p").getSingleResult() + 1);
                 passengerDao.create(passenger);
             } catch (SQLException e) {
                 logger.error(e.getMessage());
@@ -177,6 +190,7 @@ public class EmployeeService {
         try {
             transact.begin();
             try {
+                ticket.setTicketId(ticketDao.findAll().size() + 1);
                 ticketDao.create(ticket);
             } catch (SQLException e) {
                 logger.error(e.getMessage());
@@ -197,28 +211,37 @@ public class EmployeeService {
 
     public List<Schedule> getRevisedScheduleList(ScheduleConstraints constraints) {
         logger.debug("get revisedScheduleList");
-        List<Schedule> scheduleListDate = null;
+        try{
+
+        List<Schedule> scheduleListDate;
         Set<Schedule> scheduleSetStation;
+            List<Schedule> share;
 
         if (constraints.getDate() != null) {
             scheduleListDate = scheduleDao.getDateRevisedList(constraints.getDate());
         } else {
-            try {
-                scheduleListDate = scheduleDao.findAll();
-            } catch (SQLException e) {
-                logger.error(e.getMessage());
-                e.printStackTrace();
-            }
+            scheduleListDate = scheduleDao.findAll();
+
         }
-        if (!constraints.getStationFromName().equals("")) {
-            scheduleSetStation = scheduleDao.getStationRevisedList(constraints.getStationFromName(), constraints.getStationToName());
-            if (scheduleListDate != null) {
-                scheduleSetStation.addAll(scheduleListDate);
-                scheduleListDate.clear();
-                scheduleListDate.addAll(scheduleSetStation);
+        if (!constraints.getStationFromName().isEmpty()) {
+            List<Schedule> res = new ArrayList<Schedule>();
+            for (Schedule schedule : scheduleListDate) {
+                boolean flag = false;
+                for(StationDistance s:schedule.getRoute().getStationDistances())
+                    if(s.getStation().getName().equals(constraints.getStationFromName()))
+                        flag = true;
+                if(flag)
+                    res.add(schedule);
             }
+            scheduleListDate = res;
+//                    scheduleSetStation = scheduleDao.getStationRevisedList(constraints.getStationFromName(), constraints.getStationToName());
+
         }
         return scheduleListDate;
+        } catch (SQLException e){
+            logger.error(e.getMessage());
+            return new ArrayList<Schedule>();
+        }
     }
 
     public Station getStationByName(String stationName) {
@@ -252,7 +275,7 @@ public class EmployeeService {
                 routeDao.create(route);
                 if (route.getStationDistances() != null) {
                     for (StationDistance sd : route.getStationDistances()) {
-                        new StationDistanceDao().create(sd);
+                        dao.create(sd);
                     }
                 }
             } catch (SQLException e) {
@@ -280,6 +303,8 @@ public class EmployeeService {
         try {
             transact.begin();
             try {
+                long lastId = scheduleDao.findAll().size();
+                schedule.setScheduleId(lastId + 1);
                 scheduleDao.create(schedule);
             } catch (SQLException e) {
                 logger.error(e.getMessage());

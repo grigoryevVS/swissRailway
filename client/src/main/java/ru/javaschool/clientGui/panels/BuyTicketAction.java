@@ -20,14 +20,10 @@ public class BuyTicketAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (scheduleTable == null) {
-            JOptionPane.showMessageDialog(parent, "There is no schedule!");
+        if (scheduleTable.getSelectedRow() == -1) {
+            JOptionPane.showMessageDialog(parent, "Choose concrete schedule!");
         } else {
-            if (scheduleTable.getSelectedRow() == -1) {
-                JOptionPane.showMessageDialog(parent, "Choose concrete schedule!");
-            } else {
-                new BuyTicketFrame(scheduleTable);
-            }
+            new BuyTicketFrame(scheduleTable);
         }
     }
 }

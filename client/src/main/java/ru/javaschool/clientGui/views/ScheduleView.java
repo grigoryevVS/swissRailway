@@ -7,15 +7,16 @@ import ru.javaschool.database.entities.StationDistance;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
-enum ScheduleColumn {
-    ID, ROUTE_ID, ROUTE_TITLE, STATION_FROM, STATION_TO,
-    DATE_TRIP, TIME_DEPART, TRAIN_ID
-}
-
 public class ScheduleView extends AbstractTableModel {
+
+    enum ScheduleColumn {
+        ID, ROUTE_TITLE, STATION_FROM, STATION_TO,
+        DATE_TRIP, TIME_DEPART, TRAIN_ID
+    }
+
     private static final long serialVersionUID = -3983669871349074849L;
 
-    private final String[] colNames = {"Id", "RouteNumber", "RouteTitle", "StationFrom", "StationTo", "DateTrip", "DepartureTime", "TrainId"};
+    private final String[] colNames = {"Id", "RouteTitle", "StationFrom", "StationTo", "DateTrip", "DepartureTime", "TrainId"};
 
     List<Schedule> scheduleList;
 
@@ -41,21 +42,19 @@ public class ScheduleView extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 8;
+        return 7;
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
 
         Schedule schedule = scheduleList.get(rowIndex);
-        ScheduleColumn scheduleColumn = ScheduleColumn.values()[columnIndex];
         List<StationDistance> stationDistanceList = schedule.getRoute().getStationDistances();
+        ScheduleColumn scheduleColumn = ScheduleColumn.values()[columnIndex];
 
         switch (scheduleColumn) {
             case ID:
                 return schedule.getScheduleId();
-            case ROUTE_ID:
-                return schedule.getRoute().getRouteId();
             case ROUTE_TITLE:
                 return schedule.getRoute().getTitle();
             case STATION_FROM:

@@ -11,12 +11,11 @@ public class Route implements Serializable{
     private static final long serialVersionUID = 4245604106003040914L;
 
     @Id
-    @GeneratedValue
     private long routeId;
     @Column
     @NotNull(message = "It can't be empty!")
     private String title;
-    @OneToMany( fetch = FetchType.EAGER, mappedBy="key.route")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy="route")
     private List<StationDistance> stationDistances;
 
     public long getRouteId() {
@@ -47,10 +46,6 @@ public class Route implements Serializable{
 
     @Override
     public String toString() {
-        return "Route{" +
-                "routeId=" + routeId +
-                ", title='" + title + '\'' +
-                ", stationDistances=" + stationDistances +
-                '}';
+        return  routeId + ". " + title;
     }
 }

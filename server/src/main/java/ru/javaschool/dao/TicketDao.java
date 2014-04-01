@@ -3,6 +3,7 @@ package ru.javaschool.dao;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.LocalTime;
 import ru.javaschool.database.entities.Passenger;
 import ru.javaschool.database.entities.Schedule;
 import ru.javaschool.database.entities.Ticket;
@@ -44,8 +45,8 @@ public class TicketDao extends GenericDaoHiberImpl<Ticket, Long> {
         Duration interval = new Duration(600 * 1000L);
         DateTime departureTime = new DateTime(s.getDateTrip());
         DateTime currentTime = new DateTime();
-        //LocalTime departTime = new LocalTime(s.getSchedTemplate().getSchedTemplateLines().get(0).getTimePass());
-        //departureTime = departureTime.plus(departTime.getMillisOfDay());
+        LocalTime departTime = new LocalTime(s.getRoute().getStationDistances().get(0).getAppearTime());
+        departureTime = departureTime.plus(departTime.getMillisOfDay());
         Duration duration = new Duration(currentTime, departureTime);
         if (duration.isShorterThan(interval)) {
             return "Sorry, but there is only 10 minutes before departure, you can't buy ticket!";

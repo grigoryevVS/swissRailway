@@ -5,6 +5,7 @@ import ru.javaschool.clientGui.views.StationScheduleView;
 import ru.javaschool.clientMain.ClientSocket;
 import ru.javaschool.database.criteria.ScheduleConstraints;
 import ru.javaschool.database.entities.Schedule;
+import ru.javaschool.database.entities.Station;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +19,7 @@ public class StationSchedulePanel extends StandartPanel {
 
     private JTable scheduleTable;
     private StationScheduleView scheduleView;
-    private JTextField stationTextField;
+    private JComboBox stationConstraint;
 
     public StationSchedulePanel() {
         super(new BorderLayout());
@@ -34,11 +35,11 @@ public class StationSchedulePanel extends StandartPanel {
         this.add(conditionPanel, BorderLayout.NORTH);
 
         JLabel stationLabel = new JLabel("Station ");
-        stationTextField = new JTextField(16);
-        stationLabel.setLabelFor(stationTextField);
-
+        java.util.List<Station> stationList = ClientSocket.getInstance().getAllStations();
+        stationConstraint = new JComboBox(stationList.toArray());
+        stationLabel.setLabelFor(stationConstraint);
         conditionPanel.add(stationLabel);
-        conditionPanel.add(stationTextField);
+        conditionPanel.add(stationConstraint);
     }
 
     @Override
@@ -85,11 +86,8 @@ public class StationSchedulePanel extends StandartPanel {
             ScheduleConstraints constraints = new ScheduleConstraints();
             constraints.setDate(null);
             constraints.setStationToName("");
-            if (!stationTextField.getText().equals("")) {
-                constraints.setStationFromName(stationTextField.getText());
-            } else {
-                constraints.setStationFromName("");
-            }
+            Station station = (Station) stationConstraint.getSelectedItem();
+            constraints.setStationFromName(station.getName());
             scheduleTable.setModel
                     (new StationScheduleView(ClientSocket.getInstance().getStationByName
                             (constraints.getStationFromName()),
