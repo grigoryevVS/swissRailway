@@ -8,10 +8,14 @@ import ru.javaschool.database.criteria.SampleObject;
 import ru.javaschool.database.criteria.ScheduleConstraints;
 import ru.javaschool.database.entities.*;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
 
+/**
+ * This class implements singleton pattern with private constructor and public getInstance method.
+ */
 public class ClientSocket {
     private static final Logger logger = Logger.getLogger(ClientSocket.class);
 
@@ -20,6 +24,7 @@ public class ClientSocket {
     private ClientSocket() {
     }
 
+    // double-braces method of implementing singleton, with synchronized block in inner braces.
     public static ClientSocket getInstance() {
         if (instance == null) {
             synchronized (ClientSocket.class) {
@@ -32,8 +37,7 @@ public class ClientSocket {
     }
 
     public Response getResponse(Request request) {
-
-        Response resultResponse = null;
+        Response response = null;
         try {
             Socket clientSock = new Socket("localhost", 8080);
             ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(clientSock.getOutputStream()));
@@ -41,32 +45,28 @@ public class ClientSocket {
             out.flush();
 
             ObjectInputStream in = new ObjectInputStream(clientSock.getInputStream());
-            resultResponse = (Response) in.readObject();
+            response = (Response) in.readObject();
 
         } catch (IOException e) {
             logger.error((e.getMessage()));
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Server is not available!");
         } catch (ClassNotFoundException e) {
             logger.error((e.getMessage()));
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            logger.error(e.getMessage());
         }
-        return resultResponse;
+        return response;
     }
 
     @SuppressWarnings("unchecked")
-    public List<Train> getAllTrains() {   // release
+    public List<Train> getAllTrains() {
         Response response = ClientSocket.getInstance().getResponse(new Request("Get all trains"));
 
         List<Train> resultList = null;
         if (!response.getIsProblem()) {
             resultList = (List<Train>) response.getRespBody();
         } else {
-            // TODO error
-        }
-        return resultList;
 
+        }// TODO error
+        return resultList;
     }
 
     public String createTrain(Train train) {
@@ -125,7 +125,6 @@ public class ClientSocket {
             resultList = (List<Schedule>) response.getRespBody();
         } else {
             // TODO error
-
         }
         return resultList;
     }
@@ -193,7 +192,11 @@ public class ClientSocket {
     }
 
     public Schedule getScheduleById(Long id) {
-        Response response = ClientSocket.getInstance().getResponse(new Request("Get schedule by id",id));
+        Response response = ClientSocket.getInstance().getResponse(new Request("Get schedule by id", id));
         return (Schedule) response.getRespBody();
+    }
+
+    public void errorAppearance(Response response){
+
     }
 }
