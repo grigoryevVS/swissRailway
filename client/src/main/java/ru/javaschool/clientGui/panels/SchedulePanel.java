@@ -91,7 +91,7 @@ public class SchedulePanel extends StandartPanel {
         JButton logOutButton = new JButton("Log out");
         getRegisteredPassengersButton = new JButton("Get registered passengers");
         //if (!ClientFrame.registered) {
-            getRegisteredPassengersButton.setVisible(false);
+        getRegisteredPassengersButton.setVisible(false);
         //}
 
         getAllScheduleButton.addActionListener(new GetAllScheduleAction());
@@ -166,27 +166,26 @@ public class SchedulePanel extends StandartPanel {
                 try {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
                     constraints.setDate(dateFormat.parse(dateTripTextField.getText()));
+
+                    if (!fromTextField.getText().isEmpty()) {
+                        constraints.setStationFromName(fromTextField.getText());
+                    } else {
+                        constraints.setStationFromName("not selected");
+                    }
+                    if (!toTextField.getText().isEmpty()) {
+                        constraints.setStationToName(toTextField.getText());
+                    } else {
+                        constraints.setStationToName("not selected");
+                    }
+                    scheduleTable.setModel(new ScheduleView(ClientSocket.getInstance().getRevisedSchedule(constraints)));
+                    if (scheduleTable.getRowCount() == 0) {
+                        JOptionPane.showMessageDialog(null, "Sorry,there are no trains with that conditions!");
+                    }
                 } catch (ParseException e1) {
                     JOptionPane.showMessageDialog(null, "There is wrong format date, it should be dd.MM.yyyy");
+                    dateTripTextField.setText("");
                     dateTripTextField.requestFocus();
-                    e1.printStackTrace();
                 }
-            }
-            if (!fromTextField.getText().isEmpty()) {
-                constraints.setStationFromName(fromTextField.getText());
-            }
-            if (!toTextField.getText().isEmpty()) {
-                constraints.setStationToName(toTextField.getText());
-            } else {
-                constraints.setStationToName("not selected");
-            }
-            if (fromTextField.getText().isEmpty() && toTextField.getText().isEmpty() && dateTripTextField.getText().isEmpty()) {
-                scheduleTable.setModel(new ScheduleView((ClientSocket.getInstance().getAllSchedule())));
-            } else {
-                scheduleTable.setModel(new ScheduleView(ClientSocket.getInstance().getRevisedSchedule(constraints)));
-            }
-            if (scheduleTable.getRowCount() == 0) {
-                JOptionPane.showMessageDialog(null, "Sorry,there are no trains with that conditions!");
             }
         }
     }

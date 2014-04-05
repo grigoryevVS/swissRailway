@@ -30,7 +30,7 @@ public class StationDistanceView extends AbstractTableModel {
         StationDistance distance = distanceList.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                return distance.getRoute().getTitle();
+                return distance.getSequenceNumber();
             case 1:
                 return distance.getStation().getName();
             case 2:

@@ -13,7 +13,6 @@ import javax.persistence.RollbackException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class EmployeeService {
 
@@ -25,7 +24,7 @@ public class EmployeeService {
     private ScheduleDao scheduleDao = new ScheduleDao();
     private PassengerDao passengerDao = new PassengerDao();
     private RouteDao routeDao = new RouteDao();
-    private StationDistanceDao dao = new StationDistanceDao();
+    private StationDistanceDao distanceDao = new StationDistanceDao();
 
     /**
      * This method implements getting list of trains, which are
@@ -166,7 +165,6 @@ public class EmployeeService {
         try {
             transact.begin();
             try {
-                passenger.setPassengerId((Long) em.createQuery("select count (p) from Passenger p").getSingleResult() + 1);
                 passengerDao.create(passenger);
             } catch (SQLException e) {
                 logger.error(e.getMessage());
@@ -190,7 +188,6 @@ public class EmployeeService {
         try {
             transact.begin();
             try {
-                ticket.setTicketId(ticketDao.findAll().size() + 1);
                 ticketDao.create(ticket);
             } catch (SQLException e) {
                 logger.error(e.getMessage());
@@ -209,33 +206,51 @@ public class EmployeeService {
 
     }
 
+    /**
+     * This method looks, which constraints were initialized and gets schedule list with that constraints.
+     * @param constraints - station from and/or station to going train, and date when it is going.
+     * @return - list of schedule, which succeed this constraints.
+     */
     public List<Schedule> getRevisedScheduleList(ScheduleConstraints constraints) {
         logger.debug("get revisedScheduleList");
         try{
 
         List<Schedule> scheduleListDate;
-        Set<Schedule> scheduleSetStation;
-            List<Schedule> share;
 
+        // first of all, checks date, do we need to set this constraint, and getting first intermediate list.
         if (constraints.getDate() != null) {
             scheduleListDate = scheduleDao.getDateRevisedList(constraints.getDate());
         } else {
             scheduleListDate = scheduleDao.findAll();
-
         }
-        if (!constraints.getStationFromName().isEmpty()) {
+        // fo second check if we set station from.
+        if (!constraints.getStationFromName().equals("not selected")) {
             List<Schedule> res = new ArrayList<Schedule>();
             for (Schedule schedule : scheduleListDate) {
                 boolean flag = false;
                 for(StationDistance s:schedule.getRoute().getStationDistances())
-                    if(s.getStation().getName().equals(constraints.getStationFromName()))
+                // check conditions, that its not the last station in the route, and its equal to the constraint
+                    if(s.getSequenceNumber() != schedule.getRoute().getStationDistances().size() &&
+                            s.getStation().getName().equals(constraints.getStationFromName()))
                         flag = true;
                 if(flag)
                     res.add(schedule);
             }
             scheduleListDate = res;
-//                    scheduleSetStation = scheduleDao.getStationRevisedList(constraints.getStationFromName(), constraints.getStationToName());
-
+        }
+        // the last check constraint of the station to.
+        if(!constraints.getStationToName().equals("not selected")){
+            List<Schedule> res = new ArrayList<Schedule>();
+            for (Schedule schedule : scheduleListDate) {
+                boolean flag = false;
+                for(StationDistance s:schedule.getRoute().getStationDistances())
+                // check conditions that its not the first station in the route and its equal to the constraint
+                    if(s.getSequenceNumber() > 1 && s.getStation().getName().equals(constraints.getStationToName()))
+                        flag = true;
+                if(flag)
+                    res.add(schedule);
+            }
+            scheduleListDate = res;
         }
         return scheduleListDate;
         } catch (SQLException e){
@@ -275,7 +290,7 @@ public class EmployeeService {
                 routeDao.create(route);
                 if (route.getStationDistances() != null) {
                     for (StationDistance sd : route.getStationDistances()) {
-                        dao.create(sd);
+                        distanceDao.create(sd);
                     }
                 }
             } catch (SQLException e) {
