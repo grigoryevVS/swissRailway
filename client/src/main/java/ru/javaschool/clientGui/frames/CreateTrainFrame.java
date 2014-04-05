@@ -25,8 +25,6 @@ public class CreateTrainFrame extends JFrame {
 
     static class CreateTrainPanel extends JPanel {
 
-        private JLabel setTrainIdLabel;
-        private JTextField setTrainIdTextField;
         private JLabel setNameLabel;
         private JTextField setNameTextField;
         private JLabel setNumberOfSeatsLabel;
@@ -35,8 +33,6 @@ public class CreateTrainFrame extends JFrame {
 
         public CreateTrainPanel() {
 
-            setTrainIdLabel = new JLabel("Unique train id: ");
-            setTrainIdTextField = new JTextField(6);
             setNameLabel = new JLabel("Train name: ");
             setNameTextField = new JTextField(20);
             setNumberOfSeatsLabel = new JLabel("Trains capacity: ");
@@ -45,8 +41,6 @@ public class CreateTrainFrame extends JFrame {
 
             createTrainButton.addActionListener(new CreateTrainAction());
 
-            this.add(setTrainIdLabel);
-            this.add(setTrainIdTextField);
             this.add(setNameLabel);
             this.add(setNameTextField);
             this.add(setNumberOfSeatsLabel);
@@ -61,7 +55,6 @@ public class CreateTrainFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 Train train = new Train();
                 try {
-                    train.setTrainId(Long.parseLong(setTrainIdTextField.getText()));
                     train.setName(setNameTextField.getText());
                     train.setNumberOfSeats(Integer.parseInt(setNumberOfSeatsTextField.getText()));
 
@@ -76,10 +69,9 @@ public class CreateTrainFrame extends JFrame {
             }
 
             private void setClearFields() {
-                setTrainIdTextField.setText("");
-                setTrainIdTextField.requestFocus();
                 setNameTextField.setText("");
                 setNumberOfSeatsTextField.setText("");
+                setNameTextField.requestFocus();
             }
         }
     }

@@ -303,8 +303,6 @@ public class EmployeeService {
         try {
             transact.begin();
             try {
-                long lastId = scheduleDao.findAll().size();
-                schedule.setScheduleId(lastId + 1);
                 scheduleDao.create(schedule);
             } catch (SQLException e) {
                 logger.error(e.getMessage());

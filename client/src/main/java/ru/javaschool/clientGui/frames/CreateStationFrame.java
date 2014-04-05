@@ -24,24 +24,18 @@ public class CreateStationFrame extends JFrame {
 
     private class CreateStationPanel extends JPanel {
 
-        private JLabel setStationIdLabel;
-        private JTextField setStationIdTextField;
         private JLabel setNameLabel;
         private JTextField setNameTextField;
         private JButton createStationButton;
 
         public CreateStationPanel() {
 
-            setStationIdLabel = new JLabel("Unique station id: ");
-            setStationIdTextField = new JTextField(6);
             setNameLabel = new JLabel("Station name: ");
             setNameTextField = new JTextField(20);
             createStationButton = new JButton("Create station");
 
             createStationButton.addActionListener(new CreateStationAction());
 
-            this.add(setStationIdLabel);
-            this.add(setStationIdTextField);
             this.add(setNameLabel);
             this.add(setNameTextField);
             this.add(createStationButton);
@@ -53,11 +47,10 @@ public class CreateStationFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                if (setNameTextField.getText().isEmpty() || setStationIdTextField.getText().isEmpty()) {
+                if (setNameTextField.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Input data!");
                 } else {
                     Station station = new Station();
-                    station.setStationId(Long.parseLong(setStationIdTextField.getText()));
                     station.setName(setNameTextField.getText());
 
                     String response = ClientSocket.getInstance().createStation(station);
@@ -67,9 +60,8 @@ public class CreateStationFrame extends JFrame {
             }
 
             private void setClearFields() {
-                setStationIdTextField.setText("");
-                setStationIdTextField.requestFocus();
                 setNameTextField.setText("");
+                setNameTextField.requestFocus();
             }
         }
     }

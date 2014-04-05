@@ -24,7 +24,6 @@ public class CreateRouteFrame extends JFrame {
     private Route route = new Route();
     private StationDistanceView distanceView;
     private JTextField sequenceNumberTextField;
-    private JTextField setRouteIdTextField;
 
     public CreateRouteFrame() {
         super("Creating a new route");
@@ -54,9 +53,6 @@ public class CreateRouteFrame extends JFrame {
         JLabel timeLabel = new JLabel("Appearance time: ");
         appearanceTimeTextField = new JTextField(15);
         timeLabel.setLabelFor(appearanceTimeTextField);
-        JLabel setRouteIdLabel = new JLabel("Set routeId: ");
-        setRouteIdTextField = new JTextField(3);
-        setRouteIdLabel.setLabelFor(setRouteIdTextField);
 
         JButton createRouteButton = new JButton("Create: ");
         createRouteButton.addActionListener(new CreateRouteAction());
@@ -76,8 +72,6 @@ public class CreateRouteFrame extends JFrame {
         stationPanel.add(sequenceNumberTextField);
         stationPanel.add(timeLabel);
         stationPanel.add(appearanceTimeTextField);
-        stationPanel.add(setRouteIdLabel);
-        stationPanel.add(setRouteIdTextField);
         stationPanel.add(createRouteButton);
         stationPanel.add(saveResultButton);
         stationPanel.add(cleanFieldsButton);
@@ -92,7 +86,6 @@ public class CreateRouteFrame extends JFrame {
             int sequenceNumber = distanceView.getRowCount();
             StationDistance distance = new StationDistance();
             String text = routeTitleTextField.getText();
-            route.setRouteId(Long.parseLong(setRouteIdTextField.getText()));
             route.setTitle(text);
             distance.setRoute(route);
             distance.setSequenceNumber(sequenceNumber + 1);
@@ -118,7 +111,6 @@ public class CreateRouteFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            //route = new Route();
             route.setTitle(routeTitleTextField.getText());
             route.setStationDistances(distanceView.distanceList);
             String result = ClientSocket.getInstance().createRoute(route);
