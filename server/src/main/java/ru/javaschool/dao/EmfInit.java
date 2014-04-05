@@ -21,8 +21,9 @@ public class EmfInit {
 //        return emf;
 //    }
 
-    public static EntityManager em = emf.createEntityManager();
+    private static EntityManager em = emf.createEntityManager();
 
-
-
+    public static EntityManager getEm() {
+        return em;
+    }
 }

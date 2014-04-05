@@ -22,6 +22,15 @@ public class Response implements Serializable{
         respBody = obj;
     }
 
+    public Response() {
+    }
+
+    public Response(Response response){
+        this.isProblem = response.isProblem;
+        this.respBody = response.respBody;
+        this.title = response.title;
+    }
+
     public Response(String title, Serializable obj, boolean error){
         this.title = title;
         respBody = obj;

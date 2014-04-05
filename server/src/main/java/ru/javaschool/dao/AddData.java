@@ -18,7 +18,7 @@ public class AddData {
 
 
     public static void main(String[] args) throws SQLException, ParseException {
-        EntityManager em = EmfInit.em;
+        EntityManager em = EmfInit.getEm();
         EntityTransaction transact = em.getTransaction();
         EmployeeDataDao e = new EmployeeDataDao();
         TrainDao td = new TrainDao();

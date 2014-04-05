@@ -4,6 +4,7 @@ package ru.javaschool.dao;
 import ru.javaschool.database.entities.Station;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class StationDao extends GenericDaoHiberImpl<Station, Long> {
 
@@ -11,22 +12,21 @@ public class StationDao extends GenericDaoHiberImpl<Station, Long> {
         super(Station.class);
     }
 
-    public boolean findExistanceByName(String name) throws SQLException {
-        Station resultStation = em.createQuery("select s from Station s " +
-                "where s.name =:name", Station.class).setParameter("name", name).getSingleResult();
-        return resultStation.getName().equals(name);
+    public boolean findExistanceByName(String name) {
+        List<Station> stationList = getEm().createQuery("select s from Station s " +
+                "where s.name =:name", Station.class).setParameter("name", name).getResultList();
+        return stationList.size() > 0;
     }
 
     public Station findByName(String name) throws SQLException {
-        Station resultStation = em.createQuery("select s from Station s " +
+        return getEm().createQuery("select s from Station s " +
                 "where s.name =:name", Station.class).setParameter("name", name).getSingleResult();
-        return resultStation;
     }
 
     public boolean findByKey(Long key) throws SQLException{
-        Station resultStation = em.createQuery("select s from Station s " +
+        Station resultStation = getEm().createQuery("select s from Station s " +
                 "where s.stationId =:key", Station.class).setParameter("key", key).getSingleResult();
-        return resultStation.getName().equals(key);
+        return resultStation.getStationId() == key;
     }
 
 //    public boolean contain(Station station) throws SQLException{

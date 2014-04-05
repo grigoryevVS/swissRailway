@@ -14,7 +14,7 @@ import java.util.List;
  */
 public abstract class GenericDaoHiberImpl<T, PK extends Serializable> implements GenericDao<T, PK> {
 
-    protected EntityManager em = EmfInit.em;
+    protected EntityManager em = EmfInit.getEm();
     private final Class<T> type;
 
     public GenericDaoHiberImpl(Class<T> type){

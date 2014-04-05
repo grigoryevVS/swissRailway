@@ -47,55 +47,66 @@ public class EmployeeService {
     /**
      * This method creating a new train
      */
-    public Train createTrain(Train train) {
+    public String createTrain(Train train) {
 
-        EntityManager em = EmfInit.em;
+        EntityManager em = EmfInit.getEm();
         EntityTransaction transact = em.getTransaction();
-
-        try {
-            transact.begin();
+        String result;
+        if (!trainDao.findByName(train.getName())) {
             try {
-                trainDao.create(train);
-            } catch (SQLException e) {
-                logger.error(e.getMessage());
-                e.printStackTrace();
-            }
+                transact.begin();
+                try {
+                    trainDao.create(train);
+                } catch (SQLException e) {
+                    logger.error(e.getMessage());
+                    e.printStackTrace();
+                }
 
-            transact.commit();
-
-        } catch (RollbackException e) {
-            System.out.println(e.getMessage());
-            if (transact.isActive()) {
-                transact.rollback();
+                transact.commit();
+                result = "Success!";
+            } catch (RollbackException e) {
+                System.out.println(e.getMessage());
+                if (transact.isActive()) {
+                    transact.rollback();
+                }
+                result = "Failed cause: " + e.getMessage();
             }
+        } else {
+            result = "Such train is already exist!";
         }
-        return train;
+        return result;
     }
 
     /**
      * This method creating a new station
      */
-    public Station createStation(Station station) {
-        EntityManager em = EmfInit.em;
+    public String createStation(Station station) {
+        EntityManager em = EmfInit.getEm();
         EntityTransaction transact = em.getTransaction();
+        String result;
+        if(!stationDao.findExistanceByName(station.getName())){
         try {
             transact.begin();
             try {
                 stationDao.create(station);
             } catch (SQLException e) {
                 logger.error(e.getMessage());
-                e.printStackTrace();
             }
 
             transact.commit();
+            result = "Success!";
 
         } catch (RollbackException e) {
             System.out.println(e.getMessage());
             if (transact.isActive()) {
                 transact.rollback();
             }
+            result = "Failed cause: " + e.getMessage();
         }
-        return station;
+        }else {
+            result = "Such station is already exist!";
+        }
+        return result;
     }
 
     /**
@@ -122,7 +133,7 @@ public class EmployeeService {
         }
     }
 
-    public Schedule getScheduleById(Long id){
+    public Schedule getScheduleById(Long id) {
 
         try {
             return scheduleDao.findByPK(id);
@@ -160,7 +171,7 @@ public class EmployeeService {
     }
 
     public Passenger createPassenger(Passenger passenger) {
-        EntityManager em = EmfInit.em;
+        EntityManager em = EmfInit.getEm();
         EntityTransaction transact = em.getTransaction();
         try {
             transact.begin();
@@ -183,7 +194,7 @@ public class EmployeeService {
     }
 
     public String createTicket(Ticket ticket) {
-        EntityManager em = EmfInit.em;
+        EntityManager em = EmfInit.getEm();
         EntityTransaction transact = em.getTransaction();
         try {
             transact.begin();
@@ -208,52 +219,53 @@ public class EmployeeService {
 
     /**
      * This method looks, which constraints were initialized and gets schedule list with that constraints.
+     *
      * @param constraints - station from and/or station to going train, and date when it is going.
      * @return - list of schedule, which succeed this constraints.
      */
     public List<Schedule> getRevisedScheduleList(ScheduleConstraints constraints) {
         logger.debug("get revisedScheduleList");
-        try{
+        try {
 
-        List<Schedule> scheduleListDate;
+            List<Schedule> scheduleListDate;
 
-        // first of all, checks date, do we need to set this constraint, and getting first intermediate list.
-        if (constraints.getDate() != null) {
-            scheduleListDate = scheduleDao.getDateRevisedList(constraints.getDate());
-        } else {
-            scheduleListDate = scheduleDao.findAll();
-        }
-        // fo second check if we set station from.
-        if (!constraints.getStationFromName().equals("not selected")) {
-            List<Schedule> res = new ArrayList<Schedule>();
-            for (Schedule schedule : scheduleListDate) {
-                boolean flag = false;
-                for(StationDistance s:schedule.getRoute().getStationDistances())
-                // check conditions, that its not the last station in the route, and its equal to the constraint
-                    if(s.getSequenceNumber() != schedule.getRoute().getStationDistances().size() &&
-                            s.getStation().getName().equals(constraints.getStationFromName()))
-                        flag = true;
-                if(flag)
-                    res.add(schedule);
+            // first of all, checks date, do we need to set this constraint, and getting first intermediate list.
+            if (constraints.getDate() != null) {
+                scheduleListDate = scheduleDao.getDateRevisedList(constraints.getDate());
+            } else {
+                scheduleListDate = scheduleDao.findAll();
             }
-            scheduleListDate = res;
-        }
-        // the last check constraint of the station to.
-        if(!constraints.getStationToName().equals("not selected")){
-            List<Schedule> res = new ArrayList<Schedule>();
-            for (Schedule schedule : scheduleListDate) {
-                boolean flag = false;
-                for(StationDistance s:schedule.getRoute().getStationDistances())
-                // check conditions that its not the first station in the route and its equal to the constraint
-                    if(s.getSequenceNumber() > 1 && s.getStation().getName().equals(constraints.getStationToName()))
-                        flag = true;
-                if(flag)
-                    res.add(schedule);
+            // fo second check if we set station from.
+            if (!constraints.getStationFromName().equals("not selected")) {
+                List<Schedule> res = new ArrayList<Schedule>();
+                for (Schedule schedule : scheduleListDate) {
+                    boolean flag = false;
+                    for (StationDistance s : schedule.getRoute().getStationDistances())
+                        // check conditions, that its not the last station in the route, and its equal to the constraint
+                        if (s.getSequenceNumber() != schedule.getRoute().getStationDistances().size() &&
+                                s.getStation().getName().equals(constraints.getStationFromName()))
+                            flag = true;
+                    if (flag)
+                        res.add(schedule);
+                }
+                scheduleListDate = res;
             }
-            scheduleListDate = res;
-        }
-        return scheduleListDate;
-        } catch (SQLException e){
+            // the last check constraint of the station to.
+            if (!constraints.getStationToName().equals("not selected")) {
+                List<Schedule> res = new ArrayList<Schedule>();
+                for (Schedule schedule : scheduleListDate) {
+                    boolean flag = false;
+                    for (StationDistance s : schedule.getRoute().getStationDistances())
+                        // check conditions that its not the first station in the route and its equal to the constraint
+                        if (s.getSequenceNumber() > 1 && s.getStation().getName().equals(constraints.getStationToName()))
+                            flag = true;
+                    if (flag)
+                        res.add(schedule);
+                }
+                scheduleListDate = res;
+            }
+            return scheduleListDate;
+        } catch (SQLException e) {
             logger.error(e.getMessage());
             return new ArrayList<Schedule>();
         }
@@ -282,7 +294,7 @@ public class EmployeeService {
 
 
     public String createRoute(Route route) {
-        EntityManager em = EmfInit.em;
+        EntityManager em = EmfInit.getEm();
         EntityTransaction transact = em.getTransaction();
         try {
             transact.begin();
@@ -312,7 +324,7 @@ public class EmployeeService {
     }
 
     public String createSchedule(Schedule schedule) {
-        EntityManager em = EmfInit.em;
+        EntityManager em = EmfInit.getEm();
         EntityTransaction transact = em.getTransaction();
         String result = "Success";
         try {

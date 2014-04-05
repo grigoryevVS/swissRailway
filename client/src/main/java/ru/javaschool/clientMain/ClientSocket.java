@@ -71,18 +71,12 @@ public class ClientSocket {
 
     public String createTrain(Train train) {
         Response response = ClientSocket.getInstance().getResponse(new Request("Create train", train));
-        String result = "Success!";
-        if (response.getIsProblem())
-            result = response.getTitle();
-        return result;
+        return (String) response.getRespBody();
     }
 
     public String createStation(Station station) {
         Response response = ClientSocket.getInstance().getResponse(new Request("Create station", station));
-        String result = "Success!";
-        if (response.getIsProblem())
-            result = response.getTitle();
-        return result;
+        return (String) response.getRespBody();
     }
 
     public String createSchedule(Schedule schedule) {
@@ -194,9 +188,5 @@ public class ClientSocket {
     public Schedule getScheduleById(Long id) {
         Response response = ClientSocket.getInstance().getResponse(new Request("Get schedule by id", id));
         return (Schedule) response.getRespBody();
-    }
-
-    public void errorAppearance(Response response){
-
     }
 }
