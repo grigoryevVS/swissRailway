@@ -19,16 +19,13 @@ public class BuyTicketFrame extends JFrame {
 
     public BuyTicketFrame(JTable scheduleTable) {
         super("Buy ticket");
-
         setSize(800, 200);
         setVisible(true);
         setLocation(300, 300);
 
         JPanel buyTicketPanel = new BuyTicketPanel();
         this.add(buyTicketPanel);
-
         this.scheduleTable = scheduleTable;
-
     }
 
     private class BuyTicketPanel extends JPanel {
@@ -58,7 +55,6 @@ public class BuyTicketFrame extends JFrame {
 
         private class BuyTicketAction implements ActionListener {
 
-
             @Override
             public void actionPerformed(ActionEvent e) {
 
@@ -78,21 +74,13 @@ public class BuyTicketFrame extends JFrame {
                     try {
                         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
                         passenger.setBirthDate(dateFormat.parse(birthDateTextField.getText()));
+                        passenger.setFirstName(firstNameTextField.getText());
+                        passenger.setLastName(lastNameTextField.getText());
+                        buyInit(passenger);
                     } catch (ParseException ex) {
                         JOptionPane.showMessageDialog(null, "Wrong dateFormat! It should be DD.MM.YYYY");
                         clearFields();
-                        ex.printStackTrace();
                     }
-                    passenger.setFirstName(firstNameTextField.getText());
-                    passenger.setLastName(lastNameTextField.getText());
-                }
-
-                long scheduleId = (Long) scheduleTable.getValueAt(scheduleTable.getSelectedRow(), 0);
-                Response response = ClientSocket.getInstance().buyTicket(scheduleId, passenger);
-                if (response == null || response.getIsProblem()) {
-                    JOptionPane.showMessageDialog(null, "Error!");
-                } else {
-                    JOptionPane.showMessageDialog(null, "Congratulation!");
                 }
             }
 
@@ -101,6 +89,16 @@ public class BuyTicketFrame extends JFrame {
                 lastNameTextField.setText("");
                 birthDateTextField.setText("");
                 firstNameTextField.requestFocus();
+            }
+
+            private void buyInit(Passenger passenger){
+                long scheduleId = (Long) scheduleTable.getValueAt(scheduleTable.getSelectedRow(), 0);
+                Response response = ClientSocket.getInstance().buyTicket(scheduleId, passenger);
+                if (response == null || response.getIsProblem()) {
+                    JOptionPane.showMessageDialog(null, "Error!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Congratulation!");
+                }
             }
         }
     }

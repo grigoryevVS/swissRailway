@@ -85,13 +85,16 @@ public class StationSchedulePanel extends StandartPanel {
         public void actionPerformed(ActionEvent e) {
             ScheduleConstraints constraints = new ScheduleConstraints();
             constraints.setDate(null);
-            constraints.setStationToName("");
+            constraints.setStationToName("not selected");
             Station station = (Station) stationConstraint.getSelectedItem();
             constraints.setStationFromName(station.getName());
             scheduleTable.setModel
                     (new StationScheduleView(ClientSocket.getInstance().getStationByName
                             (constraints.getStationFromName()),
                             ClientSocket.getInstance().getRevisedSchedule(constraints)));
+            if(scheduleTable.getRowCount() == 0){
+                JOptionPane.showMessageDialog(null, "There are no trains from this station!");
+            }
         }
     }
 }

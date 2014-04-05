@@ -18,7 +18,6 @@ public class TicketDao extends GenericDaoHiberImpl<Ticket, Long> {
 
 
     public String buyTicket(Schedule s, Passenger p) {
-        String result;
 
         // check, that this passenger already bougth ticket on this train!
         Query existQuery = getEm().createQuery ("select t from Ticket t where t.passenger =:passenger and t.schedule =:schedule", Ticket.class);
