@@ -7,6 +7,7 @@ import org.joda.time.LocalTime;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Schedule implements Serializable {
@@ -14,6 +15,7 @@ public class Schedule implements Serializable {
     private static final long serialVersionUID = -8783126071317237137L;
 
     @Id
+    @GeneratedValue
     private long scheduleId;
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
@@ -22,6 +24,8 @@ public class Schedule implements Serializable {
     private Train train;
     @ManyToOne(fetch = FetchType.EAGER)
     private Route route;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "schedule")
+    private List<Ticket> ticketList;
 
     public long getScheduleId() {
         return scheduleId;
@@ -53,6 +57,14 @@ public class Schedule implements Serializable {
 
     public void setTrain(Train train) {
         this.train = train;
+    }
+
+    public List<Ticket> getTicketList() {
+        return ticketList;
+    }
+
+    public void setTicketList(List<Ticket> ticketList) {
+        this.ticketList = ticketList;
     }
 
     public Date getDepartTime(Station station) {

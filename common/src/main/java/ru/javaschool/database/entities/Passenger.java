@@ -3,6 +3,7 @@ package ru.javaschool.database.entities;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Passenger implements Serializable{
@@ -10,6 +11,7 @@ public class Passenger implements Serializable{
     private static final long serialVersionUID = 7322705805494879474L;
 
     @Id
+    @GeneratedValue
     private long passengerId;
     @Column( nullable = false, length = 20)
     private String firstName;
@@ -18,6 +20,8 @@ public class Passenger implements Serializable{
     @Column( nullable = false)
     @Temporal(TemporalType.DATE)
     private Date birthDate;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "passenger")
+    private List<Ticket> ticketList;
 
     public Passenger() {
     }
@@ -59,6 +63,14 @@ public class Passenger implements Serializable{
 
     public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public List<Ticket> getTicketList() {
+        return ticketList;
+    }
+
+    public void setTicketList(List<Ticket> ticketList) {
+        this.ticketList = ticketList;
     }
 
     @Override

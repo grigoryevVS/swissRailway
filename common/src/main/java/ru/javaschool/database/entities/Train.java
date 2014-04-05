@@ -2,6 +2,7 @@ package ru.javaschool.database.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
 import java.io.Serializable;
@@ -12,6 +13,7 @@ public class  Train implements Serializable{
     private static final long serialVersionUID = -6808983024241846152L;
 
     @Id
+    @GeneratedValue
     private long trainId;
     @Column( nullable = false)
     @Min(1)

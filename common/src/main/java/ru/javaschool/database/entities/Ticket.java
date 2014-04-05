@@ -8,10 +8,11 @@ public class Ticket implements Serializable{
     private static final long serialVersionUID = 7332983214543490707L;
 
     @Id
+    @GeneratedValue
     private long ticketId;
     @ManyToOne
     private Passenger passenger;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Schedule schedule;
 
     public long getTicketId() {

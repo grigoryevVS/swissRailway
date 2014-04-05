@@ -2,6 +2,7 @@ package ru.javaschool.database.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.Serializable;
 
@@ -11,6 +12,7 @@ public class Station implements Serializable {
     private static final long serialVersionUID = -8507927853458358682L;
 
     @Id
+    @GeneratedValue
     private long stationId;
     @Column(nullable = false, length = 30)
     private String name;

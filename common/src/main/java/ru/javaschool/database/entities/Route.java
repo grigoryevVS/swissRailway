@@ -11,6 +11,7 @@ public class Route implements Serializable{
     private static final long serialVersionUID = 4245604106003040914L;
 
     @Id
+    @GeneratedValue
     private long routeId;
     @Column
     @NotNull(message = "It can't be empty!")
