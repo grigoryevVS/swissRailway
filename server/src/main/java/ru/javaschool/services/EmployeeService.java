@@ -143,7 +143,7 @@ public class EmployeeService {
         }
     }
 
-    public List<Passenger> getAllRegisteredPassOnTrain(Schedule schedule) {      // done!
+    public List<Passenger> getAllRegisteredPassOnTrain(Schedule schedule) {
         return scheduleDao.getAllRegisteredOnTrain(schedule);
     }
 
@@ -283,13 +283,13 @@ public class EmployeeService {
 
     public List<Station> getStationList() {
         logger.debug("get trainMethod");
+        List<Station> stationList = new ArrayList<Station>();
         try {
-            return stationDao.findAll();
+           stationList = stationDao.findAll();
         } catch (SQLException e) {
             logger.error(e.getMessage());
-            e.printStackTrace();
-            return null;
         }
+        return stationList;
     }
 
 

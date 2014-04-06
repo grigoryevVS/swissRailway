@@ -65,7 +65,6 @@ public class CreateTrainFrame extends JFrame {
                     JOptionPane.showMessageDialog(null, "Wrong data!");
                     setClearFields();
                 }
-
             }
 
             private void setClearFields() {
